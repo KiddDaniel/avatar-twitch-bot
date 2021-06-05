@@ -8,9 +8,7 @@
     },
     "scripts": {
         "build": "node_modules/.bin/tsc",
-        "start:dev": "node_modules/.bin/tsc --watch",
-        "start:debug": "node_modules/.bin/tsc --watch --debug",
-        "start:prod": "node ./dist/main",
+        "start": "node ./dist/main",
         "lint": "node_modules/.bin/prettier --check . && node_modules/.bin/eslint \"src/**/*.ts\"",
         "prettier": "node_modules/.bin/prettier --write .",
         "prepare": "husky install"
