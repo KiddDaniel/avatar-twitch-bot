@@ -12,7 +12,8 @@
         "start:debug": "node_modules/.bin/tsc --watch --debug",
         "start:prod": "node ./dist/main",
         "lint": "node_modules/.bin/prettier --check . && node_modules/.bin/eslint \"src/**/*.ts\"",
-        "prettier": "node_modules/.bin/prettier --write ."
+        "prettier": "node_modules/.bin/prettier --write .",
+        "prepare": "husky install"
     },
     "repository": {
         "type": "git",
@@ -37,6 +38,7 @@
         "eslint-config-airbnb-typescript": "~12.3.1",
         "eslint-import-resolver-typescript": "~2.4.0",
         "eslint-plugin-import": "~2.23.0",
+        "husky": "~6.0.0",
         "jest": "~27.0.4",
         "prettier": "~2.3.1",
         "ts-node": "~10.0.0",
