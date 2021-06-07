@@ -6,7 +6,7 @@ export interface IChatCommandContext {
 
 export interface IChatCommandJob {
     readonly context: IChatCommandContext;
-    // execute: () => IChatCommandResult; // not usable with JSON serialization
+    execute: () => IChatCommandResult;
 }
 
 export interface IChatCommandResult {
@@ -21,5 +21,5 @@ export interface IChatCommand {
     readonly allowedForMods?: boolean;
     readonly allowedForSubscriber?: boolean;
 
-    execute: (params: string | string[] | null, sender?: string, job?: IChatCommandJob) => IChatCommandResult;
+    execute: (params: string | string[] | null, sender?: string) => IChatCommandResult;
 }

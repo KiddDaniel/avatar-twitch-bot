@@ -1,7 +1,8 @@
 import * as cluster from "cluster";
 import * as tmi from "tmi.js";
+import { ChatCommandJob } from "./chat-command-job.model";
 import { IChatCommand, IChatCommandJob, IChatCommandResult } from "./chat-command.interface";
-import { executeCommand, GreetingCommand } from "./commands/greeting.model";
+import { GreetingCommand } from "./commands/greeting.model";
 import { getTwitchClient, globals } from "./twitch-client";
 
 const availableCommands: IChatCommand[] = [new GreetingCommand()];
@@ -45,17 +46,7 @@ export function processClusterMessage(target: string, sender: tmi.Userstate, msg
     }
 
     const recipients = firstCommandWithReceivers.match(/@[\w|\d]*/g);
-
-    const job: IChatCommandJob = {
-        context: {
-            command: matchingAvailableCommand,
-            sender: sender.username,
-            recipients,
-        },
-        /* execute() : IChatCommandResult {
-            return this.context.command.execute(this.context.recipients, this.context.sender, this);
-        }, */
-    };
+    const job: IChatCommandJob = new ChatCommandJob(matchingAvailableCommand, sender.username, recipients);
 
     // matchingAvailableCommand.execute(recipients, sender.username)
     cluster.on("message", (worker: cluster.Worker, result: IChatCommandResult) => {
@@ -68,17 +59,9 @@ export function processClusterMessage(target: string, sender: tmi.Userstate, msg
 
     // Fork worker.
     // will be automatically queued for execution, but dont exaggerate here
-    const worker = cluster.fork();
+    const worker: cluster.Worker = cluster.fork();
+
     console.log(`Starting job on worker ${worker.process.pid}`);
     // pass job to the worker via process.send()
     worker.send(job);
-}
-
-// duh, a simple function wrapper since JSON serialization cant deal with methods.
-// Atleast not without decorators... TODO find out how to decorate this correctly.
-// unfortunately JSON serialization is actually used behind the scenes within the cluster
-// implementation of interprocess communication...
-export function executeJob(job: IChatCommandJob): IChatCommandResult {
-    // return job.context.command.execute(job.context.recipients, job.context.sender);
-    return executeCommand(job.context.command, job.context.recipients, job.context.sender);
 }
