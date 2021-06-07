@@ -1,6 +1,7 @@
 import * as tmi from "tmi.js";
 import { IChatCommand } from "./chat-command.interface";
 import { GreetingCommand } from "./commands/greeting.model";
+import { getTwitchClient, globals } from "./twitch-client";
 
 const availableCommands: IChatCommand[] = [new GreetingCommand()];
 
@@ -42,5 +43,12 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
     }
 
     const recipients = firstCommandWithReceivers.match(/@[\w|\d]*/g);
-    matchingAvailableCommand.execute(recipients, sender.username);
+    const result = matchingAvailableCommand.execute(recipients, sender.username);
+
+    if (!result.isSuccessful) {
+        console.log(result.error);
+        return;
+    }
+
+    result.messages.forEach((mesg: string) => getTwitchClient().say(globals.channels[0], mesg));
 }
