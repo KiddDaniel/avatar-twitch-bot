@@ -1,9 +1,10 @@
 import * as tmi from "tmi.js";
 import { IChatCommand } from "./chat-command.interface";
+import { DiceCommand } from "./commands/dice.model";
 import { GreetingCommand } from "./commands/greeting.model";
-import { getTwitchClient, globals } from "./twitch-client";
+import { getTwitchClient, globals, sleep } from "./twitch-client";
 
-const availableCommands: IChatCommand[] = [new GreetingCommand()];
+const availableCommands: IChatCommand[] = [new GreetingCommand(), new DiceCommand()];
 
 export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
     if (msg.indexOf("!") < 0) {
@@ -43,12 +44,15 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
     }
 
     const recipients = firstCommandWithReceivers.match(/@[\w|\d]*/g);
-    const result = matchingAvailableCommand.execute(recipients, sender.username);
 
-    if (!result.isSuccessful) {
-        console.log(result.error);
-        return;
-    }
+    sleep(globals.timeout).then(() => {
+        const result = matchingAvailableCommand.execute(recipients, sender.username);
 
-    result.messages.forEach((mesg: string) => getTwitchClient().say(globals.channels[0], mesg));
+        if (!result.isSuccessful) {
+            console.log(result.error);
+            return;
+        }
+
+        result.messages.forEach((mesg: string) => getTwitchClient().say(globals.channels[0], mesg));
+    });
 }

@@ -1,20 +1,19 @@
 import { IChatCommand } from "./chat-command.interface";
+import { DiceCommand } from "./commands/dice.model";
 import { GreetingCommand } from "./commands/greeting.model";
 
-export function ChatCommandFactory(cmd: IChatCommand): IChatCommand | undefined {
-    type ChatCommandItem = { trigger: string | string[]; command: IChatCommand };
-    const availableCommands: Array<ChatCommandItem> = [
-        { trigger: ["!greeting", "!greetings"], command: new GreetingCommand() },
-    ];
+export function ChatCommandFactory(trigger: string | string[]): IChatCommand | undefined {
+    const availableCommands = [new GreetingCommand(), new DiceCommand()];
 
-    const item: ChatCommandItem | undefined = availableCommands.find(
+    // this more exact check shall ensure we (re)build the same command instance
+    const item: IChatCommand | undefined = availableCommands.find(
         (x) =>
-            (!Array.isArray(x.trigger) && !Array.isArray(cmd.trigger) && x.trigger === cmd.trigger) ||
+            (!Array.isArray(x.trigger) && !Array.isArray(trigger) && x.trigger === trigger) ||
             (Array.isArray(x.trigger) &&
-                Array.isArray(cmd.trigger) &&
-                x.trigger.length === cmd.trigger.length &&
-                (x.trigger as Array<string>).every((value, index) => value === cmd.trigger[index])),
+                Array.isArray(trigger) &&
+                x.trigger.length === trigger.length &&
+                (x.trigger as Array<string>).every((value, index) => value === trigger[index])),
     );
 
-    return item ? item.command : undefined;
+    return item;
 }

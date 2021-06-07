@@ -10,6 +10,7 @@ export const globals: {
         password: string;
     };
     channels: string[];
+    timeout: number;
 } = {
     twitchClient: null,
     identity: {
@@ -17,9 +18,14 @@ export const globals: {
         password: process.env.PASSWORD!,
     },
     channels: process.env.CHANNELS!.split(","),
+    timeout: 5000,
 };
 
 export function getTwitchClient(): tmi.Client {
     if (globals.twitchClient === null) globals.twitchClient = tmi.client(globals);
     return globals.twitchClient;
+}
+
+export function sleep(ms: number | undefined) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
