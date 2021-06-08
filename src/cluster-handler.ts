@@ -27,17 +27,12 @@ export function processClusterMessage(target: string, sender: tmi.Userstate, msg
         cluster.on("message", listener);
     }
 
-    if (cluster.listenerCount("fork") === 0) {
-        cluster.on("fork", (worker: cluster.Worker) => {
-            console.log(`Starting job on worker ${worker.process.pid}`);
-            // pass job to the worker via process.send()
-            worker.send(job);
-        });
-    }
-
     // Fork worker.
     // will be automatically queued for execution, but dont exaggerate here
-    cluster.fork();
+    const worker: cluster.Worker = cluster.fork();
+    console.log(`Starting job on worker ${worker.process.pid}`);
+    // pass job to the worker via process.send()
+    worker.send(job);
 }
 
 export function workerHandler() {
