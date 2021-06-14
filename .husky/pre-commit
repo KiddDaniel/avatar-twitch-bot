@@ -1,0 +1,4 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+node_modules/.bin/prettier --check . && node_modules/.bin/eslint "src/**/*.ts"
