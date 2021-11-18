@@ -16,7 +16,7 @@ export class JoinCommand implements IChatCommand {
             normalizedRecipients = [recipient.replace("@", "")];
         }
 
-        const s : string = sender;
+        const s: string = sender;
         // console.log(normalizedRecipients, s in globals.devs, globals.devs, s);
 
         // dev permission check
@@ -27,19 +27,23 @@ export class JoinCommand implements IChatCommand {
                 return this.handlePlayerRegistration(s, user, nation);
             }
 
-            return { isSuccessful: false,
-                error: "please specify nation and player as dev to register another new player" };
+            return {
+                isSuccessful: false,
+                error: "please specify nation and player as dev to register another new player",
+            };
         }
         if (normalizedRecipients.length === 1) {
             const nation: string = normalizedRecipients[0];
             return this.showRegistrationInfo(s, nation);
         }
 
-        return { isSuccessful: false,
-                error: "please specify nation as user to apply for registration into a nation by a dev" };
+        return {
+            isSuccessful: false,
+            error: "please specify nation as user to apply for registration into a nation by a dev",
+        };
     }
 
-    handlePlayerRegistration(sender: string, user: string, nation: string) : IChatCommandResult {
+    handlePlayerRegistration(sender: string, user: string, nation: string): IChatCommandResult {
         if (!(user in globals.players)) {
             const player: IPlayer = { isRegistered: true, isDeveloper: sender in globals.devs, name: user };
             globals.players[user] = player;
@@ -47,24 +51,36 @@ export class JoinCommand implements IChatCommand {
             // do nation check, what to do when already associated ?
             if (!(user in globals.nations[nation].members)) {
                 globals.nations[nation].members[user] = player;
-                getTwitchClient().say(globals.channels[0], `Hey @${user}, 
-                                you are now registered in the nation of ${nation}`);
+                getTwitchClient().say(
+                    globals.channels[0],
+                    `Hey @${user}, 
+                                you are now registered in the nation of ${nation}`,
+                );
             } else {
-                getTwitchClient().say(globals.channels[0], `Hey @${user}, 
-                                you are already registered in the nation of ${nation}`);
+                getTwitchClient().say(
+                    globals.channels[0],
+                    `Hey @${user}, 
+                                you are already registered in the nation of ${nation}`,
+                );
             }
             return { isSuccessful: true };
         }
 
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, 
-                                you are already registered as player.`);
+        getTwitchClient().say(
+            globals.channels[0],
+            `Hey @${user}, 
+                                you are already registered as player.`,
+        );
         return { isSuccessful: false, error: "Player is already registered." };
     }
 
-    showRegistrationInfo(sender: string, nation: string) : IChatCommandResult {
+    showRegistrationInfo(sender: string, nation: string): IChatCommandResult {
         const url: string = "https://avatar-twitch-bot.com/register";
-        getTwitchClient().say(globals.channels[0], `Hey @${sender}, 
-                                you can register in the nation of ${nation} under ${url}`);
+        getTwitchClient().say(
+            globals.channels[0],
+            `Hey @${sender}, 
+                                you can register in the nation of ${nation} under ${url}`,
+        );
         return { isSuccessful: true };
     }
 }

@@ -15,7 +15,7 @@ export const globals: {
 
     // really need a good place to store the bot-internal structures
     players: Record<string, IPlayer>;
-    devs : string[];
+    devs: string[];
     nations: Record<string, INation>;
 } = {
     twitchClient: null,
@@ -32,7 +32,6 @@ export const globals: {
         earth: { name: "Earth", members: {} },
         air: { name: "Air", members: {} },
     },
-
 };
 
 // ToDo persistent storage of the players / devs record. ideally in JSON format. File ? small database ?
