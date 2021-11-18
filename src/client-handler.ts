@@ -1,8 +1,9 @@
 import * as tmi from "tmi.js";
 import { IChatCommand } from "./chat-command.interface";
 import { GreetingCommand } from "./commands/greeting.model";
+import { JoinCommand } from "./commands/join.model";
 
-const availableCommands: IChatCommand[] = [new GreetingCommand()];
+const availableCommands: IChatCommand[] = [new GreetingCommand(), new JoinCommand()];
 
 export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
     if (msg.indexOf("!") < 0) {
@@ -10,7 +11,7 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
         return;
     }
 
-    console.log(`* command received: no command - message: ${msg}, sender: ${sender.username}`);
+    // console.log(`* command received: no command - message: ${msg}, sender: ${sender.username}`);
 
     const commandsWithReceiver = msg.match(/!\w+(\s*@[\w|\d]*)*/g);
     if (!commandsWithReceiver || commandsWithReceiver.length <= 0) {
