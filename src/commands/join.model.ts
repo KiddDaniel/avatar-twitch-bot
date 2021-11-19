@@ -20,10 +20,17 @@ export class JoinCommand implements IChatCommand {
         // console.log(normalizedRecipients, s in globals.devs, globals.devs, s);
 
         // dev permission check
-        if (globals.devs) {
+        if (globals.devs.includes(s)) {
             if (normalizedRecipients.length === 2) {
                 const user: string = normalizedRecipients[0];
                 const nation: string = normalizedRecipients[1];
+                return this.handlePlayerRegistration(s, user, nation);
+            }
+
+            if (normalizedRecipients.length === 1) {
+                // devs can self-register
+                const user: string = s;
+                const nation: string = normalizedRecipients[0];
                 return this.handlePlayerRegistration(s, user, nation);
             }
 
