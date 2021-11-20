@@ -20,7 +20,7 @@ export class JoinCommand implements IChatCommand {
         const s: string = sender;
 
         // dev permission check
-        if (globals.devs.includes(s)) {
+        if (globals.storage.devs.includes(s)) {
             if (normalizedRecipients.length === 2) {
                 const user: string = normalizedRecipients[0];
                 const nation: string = normalizedRecipients[1];
@@ -63,14 +63,19 @@ export class JoinCommand implements IChatCommand {
     }
 
     handlePlayerRegistration(sender: string, user: string, nation: string): IChatCommandResult {
-        if (!(user in globals.players)) {
-            const player: IPlayer = { isRegistered: true, isDeveloper: sender in globals.devs, name: user };
+        if (!(user in globals.storage.players)) {
+            const player: IPlayer = {
+                isRegistered: true,
+                isDeveloper: globals.storage.devs.includes(sender),
+                name: user,
+            };
 
             // do nation check, what to do when already associated ?
-            if (nation in globals.nations) {
-                if (!(user in globals.nations[nation].members)) {
-                    globals.nations[nation].members[user] = player;
-                    globals.players[user] = player;
+            if (nation in globals.storage.nations) {
+                if (!(user in globals.storage.nations[nation].members)) {
+                    globals.storage.nations[nation].members[user] = player;
+                    globals.storage.players[user] = player;
+                    globals.storage.save();
                     getTwitchClient().say(
                         globals.channels[0],
                         `Hey @${user}, 
@@ -86,7 +91,7 @@ export class JoinCommand implements IChatCommand {
                 return { isSuccessful: true };
             }
 
-            const nations: string[] = Object.keys(globals.nations);
+            const nations: string[] = Object.keys(globals.storage.nations);
             getTwitchClient().say(
                 globals.channels[0],
                 `Hey @${user}, 
@@ -106,11 +111,22 @@ export class JoinCommand implements IChatCommand {
 
     showRegistrationInfo(sender: string, nation: string): IChatCommandResult {
         const url: string = "https://avatar-twitch-bot.com/register";
+        if (nation in globals.storage.nations) {
+            getTwitchClient().say(
+                globals.channels[0],
+                `Hey @${sender}, 
+                you can register in the nation of ${nation} under ${url}`,
+            );
+            return { isSuccessful: true };
+        }
+
+        const nations: string[] = Object.keys(globals.storage.nations);
         getTwitchClient().say(
             globals.channels[0],
             `Hey @${sender}, 
-             you can register in the nation of ${nation} under ${url}`,
+             valid nations to join are: ${nations}`,
         );
-        return { isSuccessful: true };
+
+        return { isSuccessful: false, error: "Invalid nation." };
     }
 }

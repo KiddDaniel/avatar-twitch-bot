@@ -19,7 +19,7 @@ export class LeaveCommand implements IChatCommand {
 
         const s: string = sender;
 
-        if (globals.devs.includes(s)) {
+        if (globals.storage.devs.includes(s)) {
             if (normalizedRecipients.length === 1) {
                 const user: string = normalizedRecipients[0];
                 return this.handlePlayerUnregistration(user);
@@ -31,15 +31,15 @@ export class LeaveCommand implements IChatCommand {
 
     handlePlayerUnregistration(player: string): IChatCommandResult {
         // leave completely, so search in all nation members too.
-        const nations: INation[] = Object.values(globals.nations);
+        const nations: INation[] = Object.values(globals.storage.nations);
         nations.forEach((x) => {
             if (player in x.members) {
                 delete x.members[player];
             }
         });
-        if (player in globals.players) {
-            delete globals.players[player];
-
+        if (player in globals.storage.players) {
+            delete globals.storage.players[player];
+            globals.storage.save();
             getTwitchClient().say(
                 globals.channels[0],
                 `Hey @${player}, you have been unregistered from your nation and as player.`,

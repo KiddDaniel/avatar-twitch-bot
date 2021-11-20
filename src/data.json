@@ -1,0 +1,10 @@
+{
+    "players": {},
+    "devs": ["scorpion8182", "paigfx", "mrdeathappears"],
+    "nations": {
+        "ice": { "name": "Ice", "members": {} },
+        "fire": { "name": "Fire", "members": {} },
+        "earth": { "name": "Earth", "members": {} },
+        "air": { "name": "Air", "members": {} }
+    }
+}
