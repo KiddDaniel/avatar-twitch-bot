@@ -4,19 +4,19 @@
     "nations": {
         "ice": {
             "name": "Ice",
-            "members": {}
+            "members": []
         },
         "fire": {
             "name": "Fire",
-            "members": {}
+            "members": []
         },
         "earth": {
             "name": "Earth",
-            "members": {}
+            "members": []
         },
         "air": {
             "name": "Air",
-            "members": {}
+            "members": []
         }
     },
     "filename": "./src/data.json"

@@ -33,8 +33,9 @@ export class LeaveCommand implements IChatCommand {
         // leave completely, so search in all nation members too.
         const nations: INation[] = Object.values(globals.storage.nations);
         nations.forEach((x) => {
-            if (player in x.members) {
-                delete x.members[player];
+            if (x.members.includes(player)) {
+                const index: number = x.members.indexOf(player);
+                x.members.splice(index, 1);
             }
         });
         if (player in globals.storage.players) {

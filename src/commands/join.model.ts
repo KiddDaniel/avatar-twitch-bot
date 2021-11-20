@@ -66,14 +66,14 @@ export class JoinCommand implements IChatCommand {
         if (!(user in globals.storage.players)) {
             const player: IPlayer = {
                 isRegistered: true,
-                isDeveloper: globals.storage.devs.includes(sender),
+                isDeveloper: globals.storage.devs.includes(user),
                 name: user,
             };
 
             // do nation check, what to do when already associated ?
             if (nation in globals.storage.nations) {
-                if (!(user in globals.storage.nations[nation].members)) {
-                    globals.storage.nations[nation].members[user] = player;
+                if (!globals.storage.nations[nation].members.includes(user)) {
+                    globals.storage.nations[nation].members.push(user);
                     globals.storage.players[user] = player;
                     globals.storage.save();
                     getTwitchClient().say(
