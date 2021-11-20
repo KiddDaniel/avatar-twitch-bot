@@ -2,8 +2,9 @@ import * as tmi from "tmi.js";
 import { IChatCommand } from "./chat-command.interface";
 import { GreetingCommand } from "./commands/greeting.model";
 import { JoinCommand } from "./commands/join.model";
+import { LeaveCommand } from "./commands/leave.model";
 
-const availableCommands: IChatCommand[] = [new GreetingCommand(), new JoinCommand()];
+const availableCommands: IChatCommand[] = [new GreetingCommand(), new JoinCommand(), new LeaveCommand()];
 
 export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
     if (msg.indexOf("!") < 0) {
@@ -50,9 +51,9 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
     if (recipientsArray) {
         // tokenize
         const recipients = recipientsArray[0].match(/\w+/g);
-        if (recipients) {
-            // console.log(recipients);
-            matchingAvailableCommand.execute(recipients, sender.username);
-        }
+        matchingAvailableCommand.execute(recipients, sender.username);
+    } else {
+        // only the command trigger (and the sender)
+        matchingAvailableCommand.execute(recipientsArray, sender.username);
     }
 }
