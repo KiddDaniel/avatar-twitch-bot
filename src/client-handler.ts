@@ -14,8 +14,7 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
 
     // console.log(`* command received: no command - message: ${msg}, sender: ${sender.username}`);
 
-    // const commandsWithReceiver = msg.match(/!\w+(\s*@?[\w|\d]*)*/g);
-    const commandsWithReceiver = msg.match(/^(!\w+)(\s?@?\w+)*/g);
+    const commandsWithReceiver = msg.match(/^(!\w+)(\s+@?\w+)*/g);
     if (!commandsWithReceiver || commandsWithReceiver.length <= 0) {
         console.log(`* command dropped: no command - message: ${msg}, sender: ${sender.username}`);
         return;
@@ -45,9 +44,8 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
         return;
     }
 
-    // const recipients = firstCommandWithReceivers.match("/@[\w|\d]*/g");
     // split command off
-    const recipientsArray = firstCommandWithReceivers.match(/(\s@?\w+)+/g);
+    const recipientsArray = firstCommandWithReceivers.match(/(\s+@?\w+)+/g);
     if (recipientsArray) {
         // tokenize
         const recipients = recipientsArray[0].match(/\w+/g);
