@@ -24,14 +24,17 @@ type PlayerStats = {
 export class Player {
     stats: PlayerStats;
 
+    // Sets all InnatePlayerStats in stats to 1
     initializeStats() {
        Object.values(InnatePlayerStats).forEach((stat) => { this.stats[stat] = 1; });
     }
 
+    // Increases all InnatePlayerStats in stats by either 0 or 1 (50% chance for either)
     levelUpStats() {
         Object.values(InnatePlayerStats).forEach((stat) => { this.stats[stat] += Math.round(Math.random()); });
     }
 
+    // Re-evalutes the CalculatedPlayerStats in stats
     evaluateCalculatedStats() {
         // TODO: Consider Stats from Items
         // HP
