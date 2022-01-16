@@ -2,6 +2,7 @@ import * as tmi from "tmi.js";
 import { globals } from "./twitch-client";
 import { processClientMessage } from "./client-handler";
 
+globals.storage.load();
 globals.twitchClient = tmi.client(globals);
 
 globals.twitchClient.on("message", processClientMessage);

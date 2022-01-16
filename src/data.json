@@ -1,0 +1,23 @@
+{
+    "players": {},
+    "devs": ["scorpion8182", "paigfx", "mrdeathappears", "BothLine"],
+    "nations": {
+        "water": {
+            "name": "Water",
+            "members": []
+        },
+        "fire": {
+            "name": "Fire",
+            "members": []
+        },
+        "earth": {
+            "name": "Earth",
+            "members": []
+        },
+        "air": {
+            "name": "Air",
+            "members": []
+        }
+    },
+    "filename": "./src/data.json"
+}
