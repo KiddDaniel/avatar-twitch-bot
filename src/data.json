@@ -1,9 +1,14 @@
 {
     "players": {},
-    "devs": ["scorpion8182", "paigfx", "mrdeathappears"],
+    "devs": [
+        "scorpion8182",
+        "paigfx",
+        "mrdeathappears",
+        "BothLine"
+    ],
     "nations": {
-        "ice": {
-            "name": "Ice",
+        "water": {
+            "name": "Water",
             "members": []
         },
         "fire": {

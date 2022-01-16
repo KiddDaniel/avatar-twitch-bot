@@ -3,6 +3,7 @@ import { IChatCommand } from "./chat-command.interface";
 import { GreetingCommand } from "./commands/greeting.model";
 import { JoinCommand } from "./commands/join.model";
 import { LeaveCommand } from "./commands/leave.model";
+import { globals } from "./twitch-client";
 
 const availableCommands: IChatCommand[] = [new GreetingCommand(), new JoinCommand(), new LeaveCommand()];
 
@@ -43,6 +44,9 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
         console.log(`* dropping command: no permission ${sender.username}: ${msg}`);
         return;
     }
+
+    // refresh storage here
+    globals.storage.load();
 
     // split command off
     const recipientsArray = firstCommandWithReceivers.match(/(\s+@?\w+)+/g);

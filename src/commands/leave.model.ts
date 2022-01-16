@@ -24,9 +24,10 @@ export class LeaveCommand implements IChatCommand {
                 const user: string = normalizedRecipients[0];
                 return this.handlePlayerUnregistration(user);
             }
+            // testwise self deregistration, only for devs too.
+            return this.handlePlayerUnregistration(s);
         }
-
-        return this.handlePlayerUnregistration(s);
+        return { isSuccessful: false };
     }
 
     handlePlayerUnregistration(player: string): IChatCommandResult {
