@@ -1,11 +1,6 @@
 {
     "players": {},
-    "devs": [
-        "scorpion8182",
-        "paigfx",
-        "mrdeathappears",
-        "BothLine"
-    ],
+    "devs": ["scorpion8182", "paigfx", "mrdeathappears", "BothLine"],
     "nations": {
         "water": {
             "name": "Water",
