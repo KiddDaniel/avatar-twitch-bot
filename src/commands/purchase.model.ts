@@ -120,6 +120,7 @@ export class PurchaseCommand implements IChatCommand {
             globals.storage.players[user].inventory.items[item].expire = time + expire;
         }
 
+        globals.storage.save();
         getTwitchClient().say(
             globals.channels[0],
             `Hey @${user}, You successfully purchased an item of the type ${item}`,

@@ -51,7 +51,7 @@ export class MountCommand implements IChatCommand {
 
         // calculate remaining duration, approximately
         const days: number = expire / (60 * 60 * 24);
-        const upkeeps: number = globals.storage.players[user].inventory.items.Upkeep.amount;
+        const upkeeps: number = globals.storage.players[user].inventory.items.upkeep.amount;
 
         getTwitchClient().say(
             globals.channels[0],

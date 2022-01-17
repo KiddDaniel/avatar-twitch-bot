@@ -13,17 +13,16 @@ export class Mount implements IInventoryItem {
 
     static getMount(p: IPlayer): Mount | null {
         const items: Array<string> = Object.keys(p.inventory.items);
+        let it: Mount | null = null;
 
         items.forEach((k: string) => {
             const item: IInventoryItem = p.inventory.items[k];
-            if (Mount.isMount(item)) {
-                return item as Mount;
+            if (Mount.isMount(item) && item.amount > 0) {
+                it = item as Mount;
             }
-
-            return null;
         });
 
-        return null;
+        return it;
     }
 
     static checkSelfDestruct(p: IPlayer): string {
