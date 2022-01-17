@@ -76,17 +76,7 @@ export class JoinCommand implements IChatCommand {
                 nation,
                 // TODO set stats here and possible start items
                 stats: {
-                    types: [
-                        "level",
-                        "boldness",
-                        "intelligence",
-                        "intuition",
-                        "charisma",
-                        "dexterity",
-                        "constitution",
-                        "strength",
-                    ],
-                    values: {
+                    base: {
                         level: 1,
                         boldness: 1,
                         intelligence: 1,
@@ -98,9 +88,7 @@ export class JoinCommand implements IChatCommand {
                     },
                 },
                 inventory: {
-                    // TODO those are just inventory item SLOTS with amount = 0 !!!!
-                    itemTypes: ["upkeep", "dragon", "badgermole", "flyingbison", "polarbeardog"],
-                    items: {
+                    slots: {
                         upkeep: new Upkeep(),
                         dragon: new Dragon(),
                         badgermole: new BadgerMole(),
@@ -111,10 +99,10 @@ export class JoinCommand implements IChatCommand {
                 wallet: 2500, // start money
             };
 
-            const keys: Array<string> = player.inventory.itemTypes;
+            const keys: Array<string> = Object.keys(player.inventory.slots);
             keys.forEach((k: string) => {
                 // properly initialize player inventory
-                player.inventory.items[k].amount = 0;
+                player.inventory.slots[k].amount = 0;
             });
 
             // do nation check, what to do when already associated ?

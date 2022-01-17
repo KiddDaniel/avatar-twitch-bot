@@ -1,6 +1,5 @@
 export interface IInventory {
-    readonly itemTypes: Array<string>;
-    readonly items: Record<string, IInventoryItem>;
+    readonly slots: Record<string, IInventoryItem>;
 }
 
 export interface IInventoryItem {

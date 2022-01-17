@@ -36,8 +36,7 @@ export class FileStorage implements IStorage {
     devs = [];
     nations = {};
     stock = {
-        itemTypes: ["upkeep", "dragon", "badgermole", "flyingbison", "polarbeardog"],
-        items: {
+        slots: {
             upkeep: new Upkeep(),
             dragon: new Dragon(),
             badgermole: new BadgerMole(),

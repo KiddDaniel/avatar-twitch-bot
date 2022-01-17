@@ -12,11 +12,11 @@ export class Mount implements IInventoryItem {
     }
 
     static getMount(p: IPlayer): Mount | null {
-        const items: Array<string> = Object.keys(p.inventory.items);
+        const items: Array<string> = Object.keys(p.inventory.slots);
         let it: Mount | null = null;
 
         items.forEach((k: string) => {
-            const item: IInventoryItem = p.inventory.items[k];
+            const item: IInventoryItem = p.inventory.slots[k];
             if (Mount.isMount(item) && item.amount > 0) {
                 it = item as Mount;
             }
@@ -35,15 +35,15 @@ export class Mount implements IInventoryItem {
         if (time >= m.expire) {
             // remove this mount from player and notify him / her
             // do we have upkeeps left ?
-            if (p.inventory.items.Upkeep.amount > 0) {
-                p.inventory.items.Upkeep.amount -= 1;
-                m.expire += p.inventory.items.Upkeep.properties.expire;
-                const a: number = p.inventory.items.Upkeep.amount;
+            if (p.inventory.slots.Upkeep.amount > 0) {
+                p.inventory.slots.Upkeep.amount -= 1;
+                m.expire += p.inventory.slots.Upkeep.properties.expire;
+                const a: number = p.inventory.slots.Upkeep.amount;
                 return `Hey @${p.name}, your mount has still ${a} upkeeps left .`;
             }
 
-            p.inventory.items[m.name].amount = 0;
-            p.inventory.items[m.name].expire = -1;
+            p.inventory.slots[m.name].amount = 0;
+            p.inventory.slots[m.name].expire = -1;
             return `Hey @${p.name}, your mount has died due to insufficient funding.`;
         }
         return "";

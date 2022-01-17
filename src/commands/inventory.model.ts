@@ -33,19 +33,26 @@ export class InventoryCommand implements IChatCommand {
 
         if (normalizedRecipients.length === 0) {
             const user: string = s;
-            return this.handleDisplayStock(user);
+            return this.handleDisplayInventory(user);
         }
 
         return this.error(s, "Too many parameters for this command, expected 0 additional parameters.");
     }
 
-    handleDisplayStock(user: string): IChatCommandResult {
+    handleDisplayInventory(user: string): IChatCommandResult {
         let data: string = "";
-        const keys: Array<string> = globals.storage.players[user].inventory.itemTypes;
+        const keys: Array<string> = Object.keys(globals.storage.players[user].inventory.slots);
         keys.forEach((k: string) => {
-            const str: string = `${k}: ${globals.storage.players[user].inventory.items[k].amount}; `;
-            data = data.concat(str);
+            const a: number = globals.storage.players[user].inventory.slots[k].amount;
+            if (a > 0) {
+                const str: string = `${k}: ${a}; `;
+                data = data.concat(str);
+            }
         });
+
+        if (data === "") {
+            data = "nothing";
+        }
 
         getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${data} in your inventory.`);
 

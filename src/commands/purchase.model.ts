@@ -50,26 +50,26 @@ export class PurchaseCommand implements IChatCommand {
 
     handleItemPurchase(user: string, item: string): IChatCommandResult {
         // check items validity
-        const itemExisting: boolean = globals.storage.stock.itemTypes.includes(item);
+        const itemExisting: boolean = item in globals.storage.stock.slots;
         if (!itemExisting) {
             return this.error(user, `Item ${item} does not exist in stock!`);
         }
 
-        const itemAmount: number = globals.storage.stock.items[item].amount;
+        const itemAmount: number = globals.storage.stock.slots[item].amount;
 
         if (itemAmount === 0) {
             return this.error(user, "This item is currently not available in stock!");
         }
 
         // check price aka cost in stock
-        const piece: IInventoryItem = globals.storage.stock.items[item];
+        const piece: IInventoryItem = globals.storage.stock.slots[item];
         const player: IPlayer = globals.storage.players[user];
         const price: number = piece.properties.cost;
         const balance: number = globals.storage.players[user].wallet;
         const max: number = piece.properties.maxAmount;
-        const playerAmount: number = player.inventory.items[item].amount;
+        const playerAmount: number = player.inventory.slots[item].amount;
         const { level } = piece.properties.statRequired;
-        const playerLevel: number = player.stats.values.level;
+        const playerLevel: number = player.stats.base.level;
         const { nation } = piece.properties;
         const playerNation: string = player.nation;
 
@@ -107,17 +107,17 @@ export class PurchaseCommand implements IChatCommand {
         globals.storage.players[user].wallet -= price;
         // if the stock has a limit, decrease it, -1 for unlimited
         if (piece.amount > -1) {
-            globals.storage.stock.items[item].amount -= 1;
+            globals.storage.stock.slots[item].amount -= 1;
         }
         // increase players amount
-        globals.storage.players[user].inventory.items[item].amount += 1;
+        globals.storage.players[user].inventory.slots[item].amount += 1;
 
         // what to do with expiration, for example death timers... the bot process manages that per user ? really ?
-        const { expire } = globals.storage.stock.items[item].properties;
+        const { expire } = globals.storage.stock.slots[item].properties;
         // -1 for never expire
         if (expire > -1) {
             const time: number = Date.now() / 1000; // in seconds
-            globals.storage.players[user].inventory.items[item].expire = time + expire;
+            globals.storage.players[user].inventory.slots[item].expire = time + expire;
         }
 
         globals.storage.save();

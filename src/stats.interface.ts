@@ -1,6 +1,5 @@
 export interface IStats {
-    readonly types: Array<string>;
-    readonly values: Record<string, number>;
+    readonly base: Record<string, number>;
 }
 
 export interface ICalculatedStats extends IStats {

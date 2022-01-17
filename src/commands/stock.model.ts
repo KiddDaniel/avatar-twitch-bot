@@ -41,9 +41,9 @@ export class StockCommand implements IChatCommand {
 
     handleDisplayStock(user: string) {
         let data: string = "";
-        const keys: Array<string> = globals.storage.stock.itemTypes;
+        const keys: Array<string> = Object.keys(globals.storage.stock.slots);
         keys.forEach((k: string) => {
-            const str: string = `${k}: ${globals.storage.stock.items[k].amount}; `;
+            const str: string = `${k}: ${globals.storage.stock.slots[k].amount}; `;
             data = data.concat(str);
         });
         getTwitchClient().say(globals.channels[0], `Hey @${user}, Today we have ${data} in stock.`);
