@@ -5,7 +5,7 @@ export class Upkeep implements IInventoryItem {
     amount: number = -1;
     expire: number = 0;
     properties: IInventoryItemProperty = {
-        expire: 604800,
+        expire: -1,
         maxAmount: -1,
         nation: "",
         statRequired: { level: -1 },
