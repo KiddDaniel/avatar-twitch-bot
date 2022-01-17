@@ -1,11 +1,24 @@
 import * as tmi from "tmi.js";
 import { IChatCommand } from "./chat-command.interface";
 import { GreetingCommand } from "./commands/greeting.model";
+import { InventoryCommand } from "./commands/inventory.model";
 import { JoinCommand } from "./commands/join.model";
 import { LeaveCommand } from "./commands/leave.model";
-import { globals } from "./twitch-client";
+import { MountCommand } from "./commands/mount.model";
+import { PurchaseCommand } from "./commands/purchase.model";
+import { StockCommand } from "./commands/stock.model";
+import { Mount } from "./items/mount";
+import { getTwitchClient, globals } from "./twitch-client";
 
-const availableCommands: IChatCommand[] = [new GreetingCommand(), new JoinCommand(), new LeaveCommand()];
+const availableCommands: IChatCommand[] = [
+    new GreetingCommand(),
+    new JoinCommand(),
+    new LeaveCommand(),
+    new PurchaseCommand(),
+    new MountCommand(),
+    new StockCommand(),
+    new InventoryCommand(),
+];
 
 export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
     if (msg.indexOf("!") < 0) {
@@ -47,6 +60,14 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
 
     // refresh storage here
     globals.storage.load();
+
+    // check recipients mount (if the sender is a player)
+    if (sender.name in globals.storage.players) {
+        const mesg: string = Mount.checkSelfDestruct(globals.storage.players[sender.name]);
+        if (mesg !== "") {
+            getTwitchClient().say(globals.channels[0], `Hey @${sender.name}, ${mesg}`);
+        }
+    }
 
     // split command off
     const recipientsArray = firstCommandWithReceivers.match(/(\s+@?\w+)+/g);

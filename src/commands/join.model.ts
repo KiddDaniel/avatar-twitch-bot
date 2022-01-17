@@ -68,6 +68,17 @@ export class JoinCommand implements IChatCommand {
                 isRegistered: true,
                 isDeveloper: globals.storage.devs.includes(user),
                 name: user,
+                nation,
+                // TODO set stats here and start items
+                stats: {
+                    types: [],
+                    values: {},
+                },
+                inventory: {
+                    itemTypes: [],
+                    items: {},
+                },
+                wallet: 100, // start money
             };
 
             // do nation check, what to do when already associated ?

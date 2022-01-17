@@ -1,3 +1,8 @@
+import { BadgerMole } from "./items/badgermole";
+import { Dragon } from "./items/dragon";
+import { FlyingBison } from "./items/flyingbison";
+import { PolarBearDog } from "./items/polarbeardog";
+import { Upkeep } from "./items/upkeep";
 import { IStorage } from "./storage.interface";
 
 const jsonfile = require("jsonfile");
@@ -30,6 +35,16 @@ export class FileStorage implements IStorage {
     players = {};
     devs = [];
     nations = {};
+    stock = {
+        itemTypes: ["Upkeep", "Dragon", "BadgerMole", "FlyingBison", "PolarBearDog"],
+        items: {
+            Upkeep: new Upkeep(),
+            Dragon: new Dragon(),
+            BadgerMole: new BadgerMole(),
+            FlyingBison: new FlyingBison(),
+            PolarBearDog: new PolarBearDog(),
+        },
+    };
     filename = "./src/data.json";
 
     // credit: Typescript documentation, src
