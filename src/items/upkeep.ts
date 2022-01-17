@@ -1,13 +1,14 @@
 import { IInventoryItem, IInventoryItemProperty } from "src/inventory.interface";
 
 export class Upkeep implements IInventoryItem {
-    name: string = "Upkeep";
-    amount: number = 0;
+    name: string = "upkeep";
+    amount: number = -1;
+    expire: number = 0;
     properties: IInventoryItemProperty = {
         expire: 604800,
         maxAmount: -1,
         nation: "",
-        statRequired: {},
+        statRequired: { level: -1 },
         cost: 20,
         statInfluence: {},
     };

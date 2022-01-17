@@ -1,6 +1,6 @@
-import { IInventoryItem } from "src/inventory.interface";
-import { Mount } from "src/items/mount";
-import { IPlayer } from "src/player.interface";
+import { IInventoryItem } from "../inventory.interface";
+import { Mount } from "../items/mount";
+import { IPlayer } from "../player.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
 
@@ -50,12 +50,12 @@ export class PurchaseCommand implements IChatCommand {
 
     handleItemPurchase(user: string, item: string): IChatCommandResult {
         // check items validity
-        const itemExisting: boolean = item in globals.storage.stock.itemTypes;
-        const itemAmount: number = globals.storage.stock.items[item].amount;
-
+        const itemExisting: boolean = globals.storage.stock.itemTypes.includes(item);
         if (!itemExisting) {
-            return this.error(user, "This item does not exist in stock!");
+            return this.error(user, `Item ${item} does not exist in stock!`);
         }
+
+        const itemAmount: number = globals.storage.stock.items[item].amount;
 
         if (itemAmount === 0) {
             return this.error(user, "This item is currently not available in stock!");
@@ -68,17 +68,20 @@ export class PurchaseCommand implements IChatCommand {
         const balance: number = globals.storage.players[user].wallet;
         const max: number = piece.properties.maxAmount;
         const playerAmount: number = player.inventory.items[item].amount;
-        const { level } = piece.properties.statRequired; // WTF ?
+        const { level } = piece.properties.statRequired;
         const playerLevel: number = player.stats.values.level;
-        // const playerLevel: number = player.stats.values["level"];
         const { nation } = piece.properties;
         const playerNation: string = player.nation;
 
         const enoughMoney: boolean = balance > price;
-        const enoughSpace: boolean = playerAmount < max;
-        const enoughLevel: boolean = playerLevel >= level;
-        const correctNation: boolean = playerNation === nation;
+        const enoughSpace: boolean = playerAmount < max || max === -1;
+        const enoughLevel: boolean = playerLevel >= level || level === -1;
+        const correctNation: boolean = playerNation === nation || nation === "";
         const upkeepNoMount: boolean = piece.name === "upkeep" && !Mount.getMount(player);
+
+        if (!correctNation) {
+            return this.error(user, "This item is not available for your nation !");
+        }
 
         if (!enoughMoney) {
             return this.error(user, "You do not have enough Yuan to purchase this item !");
@@ -89,15 +92,15 @@ export class PurchaseCommand implements IChatCommand {
         }
 
         if (!enoughLevel) {
-            return this.error(user, "Your level of experience is too low to purchase this item !");
-        }
-
-        if (!correctNation) {
-            return this.error(user, "This item is not available for your nation !");
+            return this.error(
+                user,
+                `Your level of experience ( have: ${playerLevel}, 
+                need: ${level} ) is too low to purchase this item !`,
+            );
         }
 
         if (upkeepNoMount) {
-            return this.error(user, "You cannot purchase a mount upkeep without having a mount in your inventory");
+            return this.error(user, "You cannot purchase a mount upkeep without having a mount in your inventory !");
         }
 
         // successful purchase
@@ -114,7 +117,7 @@ export class PurchaseCommand implements IChatCommand {
         // -1 for never expire
         if (expire > -1) {
             const time: number = Date.now() / 1000; // in seconds
-            globals.storage.players[user].inventory.items[item].properties.expire = time + expire;
+            globals.storage.players[user].inventory.items[item].expire = time + expire;
         }
 
         getTwitchClient().say(

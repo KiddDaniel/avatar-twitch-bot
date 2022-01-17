@@ -3,19 +3,19 @@
     "devs": ["scorpion8182", "paigfx", "mrdeathappears", "BothLine"],
     "nations": {
         "water": {
-            "name": "Water",
+            "name": "water",
             "members": []
         },
         "fire": {
-            "name": "Fire",
+            "name": "fire",
             "members": []
         },
         "earth": {
-            "name": "Earth",
+            "name": "earth",
             "members": []
         },
         "air": {
-            "name": "Air",
+            "name": "air",
             "members": []
         }
     },

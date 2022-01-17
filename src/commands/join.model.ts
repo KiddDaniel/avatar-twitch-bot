@@ -1,4 +1,9 @@
-import { IPlayer } from "src/player.interface";
+import { BadgerMole } from "../items/badgermole";
+import { Dragon } from "../items/dragon";
+import { FlyingBison } from "../items/flyingbison";
+import { PolarBearDog } from "../items/polarbeardog";
+import { Upkeep } from "../items/upkeep";
+import { IPlayer } from "../player.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
 
@@ -69,17 +74,48 @@ export class JoinCommand implements IChatCommand {
                 isDeveloper: globals.storage.devs.includes(user),
                 name: user,
                 nation,
-                // TODO set stats here and start items
+                // TODO set stats here and possible start items
                 stats: {
-                    types: [],
-                    values: {},
+                    types: [
+                        "level",
+                        "boldness",
+                        "intelligence",
+                        "intuition",
+                        "charisma",
+                        "dexterity",
+                        "constitution",
+                        "strength",
+                    ],
+                    values: {
+                        level: 1,
+                        boldness: 1,
+                        intelligence: 1,
+                        intuition: 1,
+                        charisma: 1,
+                        dexterity: 1,
+                        constitution: 1,
+                        strength: 1,
+                    },
                 },
                 inventory: {
-                    itemTypes: [],
-                    items: {},
+                    // TODO those are just inventory item SLOTS with amount = 0 !!!!
+                    itemTypes: ["upkeep", "dragon", "badgermole", "flyingbison", "polarbeardog"],
+                    items: {
+                        upkeep: new Upkeep(),
+                        dragon: new Dragon(),
+                        badgermole: new BadgerMole(),
+                        flyingbison: new FlyingBison(),
+                        polarbeardog: new PolarBearDog(),
+                    },
                 },
-                wallet: 100, // start money
+                wallet: 2500, // start money
             };
+
+            const keys: Array<string> = player.inventory.itemTypes;
+            keys.forEach((k: string) => {
+                // properly initialize player inventory
+                player.inventory.items[k].amount = 0;
+            });
 
             // do nation check, what to do when already associated ?
             if (nation in globals.storage.nations) {

@@ -7,6 +7,7 @@ import { LeaveCommand } from "./commands/leave.model";
 import { MountCommand } from "./commands/mount.model";
 import { PurchaseCommand } from "./commands/purchase.model";
 import { StockCommand } from "./commands/stock.model";
+import { WalletCommand } from "./commands/wallet";
 import { Mount } from "./items/mount";
 import { getTwitchClient, globals } from "./twitch-client";
 
@@ -18,6 +19,7 @@ const availableCommands: IChatCommand[] = [
     new MountCommand(),
     new StockCommand(),
     new InventoryCommand(),
+    new WalletCommand(),
 ];
 
 export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {

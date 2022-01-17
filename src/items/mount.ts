@@ -4,6 +4,7 @@ import { IInventoryItem, IInventoryItemProperty } from "../inventory.interface";
 export class Mount implements IInventoryItem {
     name: string;
     amount: number;
+    expire: number;
     properties: IInventoryItemProperty;
 
     static isMount(item: IInventoryItem): item is Mount {
@@ -32,18 +33,18 @@ export class Mount implements IInventoryItem {
         }
 
         const time: number = Date.now() / 1000; // time in seconds
-        if (time >= m.properties.expire) {
+        if (time >= m.expire) {
             // remove this mount from player and notify him / her
             // do we have upkeeps left ?
             if (p.inventory.items.Upkeep.amount > 0) {
                 p.inventory.items.Upkeep.amount -= 1;
-                m.properties.expire += p.inventory.items.Upkeep.properties.expire;
+                m.expire += p.inventory.items.Upkeep.properties.expire;
                 const a: number = p.inventory.items.Upkeep.amount;
                 return `Hey @${p.name}, your mount has still ${a} upkeeps left .`;
             }
 
             p.inventory.items[m.name].amount = 0;
-            p.inventory.items[m.name].properties.expire = -1;
+            p.inventory.items[m.name].expire = -1;
             return `Hey @${p.name}, your mount has died due to insufficient funding.`;
         }
         return "";

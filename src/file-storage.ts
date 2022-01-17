@@ -36,13 +36,13 @@ export class FileStorage implements IStorage {
     devs = [];
     nations = {};
     stock = {
-        itemTypes: ["Upkeep", "Dragon", "BadgerMole", "FlyingBison", "PolarBearDog"],
+        itemTypes: ["upkeep", "dragon", "badgermole", "flyingbison", "polarbeardog"],
         items: {
-            Upkeep: new Upkeep(),
-            Dragon: new Dragon(),
-            BadgerMole: new BadgerMole(),
-            FlyingBison: new FlyingBison(),
-            PolarBearDog: new PolarBearDog(),
+            upkeep: new Upkeep(),
+            dragon: new Dragon(),
+            badgermole: new BadgerMole(),
+            flyingbison: new FlyingBison(),
+            polarbeardog: new PolarBearDog(),
         },
     };
     filename = "./src/data.json";
