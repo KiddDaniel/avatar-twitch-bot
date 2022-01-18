@@ -121,8 +121,10 @@ export class PurchaseCommand implements IChatCommand {
             const { expire } = piece.item;
             // -1 for never expire
             if (expire > -1) {
-                const time: number = Date.now();
-                nitem.expire = time + expire * 1000; // time is in milliseconds
+                if (piece.slot === "mount") {
+                    const time: number = Date.now();
+                    nitem.expire = time + expire * 1000; // time is in milliseconds
+                }
             }
 
             // adapt stats

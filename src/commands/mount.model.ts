@@ -51,7 +51,7 @@ export class MountCommand implements IChatCommand {
 
         // calculate remaining duration, approximately
         const days: number = (expire - Date.now()) / (1000.0 * 60.0 * 60.0 * 24.0);
-        const sdays: string = days.toFixed(3);
+        const sdays: string = days.toFixed(5);
 
         const upkeeps: number = globals.storage.players[user].inventory.slots.upkeep.items.length;
 

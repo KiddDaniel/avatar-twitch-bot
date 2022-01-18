@@ -33,14 +33,13 @@ export class Mount implements IInventoryItemSlot {
         }
 
         const time: number = Date.now();
-        console.log(time, m.items[0].expire);
+        // console.log(time, m.items[0].expire);
         if (time >= m.items[0].expire) {
             // remove this mount from player and notify him / her
             // do we have upkeeps left ?
             const upkeeps: Array<IUpkeep> = p.inventory.slots.upkeep.items;
             if (upkeeps.length > 0) {
                 const u: IUpkeep | undefined = upkeeps.shift();
-                console.log(u?.expire);
                 if (u !== undefined) {
                     m.items[0].expire += u.expire * 1000;
                     const a: number = upkeeps.length;

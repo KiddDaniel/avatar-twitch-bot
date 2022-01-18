@@ -51,7 +51,7 @@ export class InventoryCommand implements IChatCommand {
                     const str: string = `${item.name}; `;
                     data = data.concat(str);
                 });
-                data = data.concat(" )");
+                data = data.concat(") ");
             }
         });
 
