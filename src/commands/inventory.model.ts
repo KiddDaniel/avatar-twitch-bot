@@ -48,7 +48,7 @@ export class InventoryCommand implements IChatCommand {
             if (items.length > 0) {
                 data = data.concat(`${slot.name} (${items.length}) : ( `);
                 items.forEach((item: IInventoryItem) => {
-                    const str: string = `${item}; `;
+                    const str: string = `${item.name}; `;
                     data = data.concat(str);
                 });
                 data = data.concat(" )");

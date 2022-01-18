@@ -64,10 +64,11 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
     globals.storage.load();
 
     // check recipients mount (if the sender is a player)
-    if (sender.name in globals.storage.players) {
-        const mesg: string = Mount.checkSelfDestruct(globals.storage.players[sender.name]);
+    if (sender.username in globals.storage.players) {
+        const mesg: string = Mount.checkSelfDestruct(globals.storage.players[sender.username]);
         if (mesg !== "") {
-            getTwitchClient().say(globals.channels[0], `Hey @${sender.name}, ${mesg}`);
+            globals.storage.save();
+            getTwitchClient().say(globals.channels[0], `Hey @${sender.username}, ${mesg}`);
         }
     }
 

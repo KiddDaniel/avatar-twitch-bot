@@ -47,15 +47,17 @@ export class MountCommand implements IChatCommand {
         }
 
         const data: string = m.name;
-        const { expire } = m;
+        const { expire } = m.items[0];
 
         // calculate remaining duration, approximately
-        const days: number = expire / (60 * 60 * 24);
+        const days: number = (expire - Date.now()) / (1000.0 * 60.0 * 60.0 * 24.0);
+        const sdays: string = days.toFixed(3);
+
         const upkeeps: number = globals.storage.players[user].inventory.slots.upkeep.items.length;
 
         getTwitchClient().say(
             globals.channels[0],
-            `Hey @${user}, Your mount is a ${data} with a lifetime of ${days} days with ${upkeeps} upkeeps left.`,
+            `Hey @${user}, Your mount is a ${data} with a lifetime of ${sdays} days with ${upkeeps} upkeeps left.`,
         );
 
         return {

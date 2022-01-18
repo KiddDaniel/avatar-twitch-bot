@@ -2,7 +2,7 @@ import { IMount } from "../slots/mount";
 
 export class Dragon implements IMount {
     name = "dragon";
-    expire = 604800;
+    expire = 10;
     maxAmount = 1;
     nation = "fire";
     statRequired = { level: -1 };

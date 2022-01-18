@@ -4,6 +4,7 @@ import { BaseCoat } from "./equipment/coats/basecoat";
 import { BaseHat } from "./equipment/hats/basehat";
 import { BasePants } from "./equipment/pants/basepants";
 import { BaseShoe } from "./equipment/shoes/baseshoe";
+import { BaseUpkeep } from "./misc/baseupkeep";
 import { BadgerMole } from "./mounts/badgermole";
 import { Dragon } from "./mounts/dragon";
 import { FlyingBison } from "./mounts/flyingbison";
@@ -30,6 +31,8 @@ export class ItemFactory {
                 return new BaseCoat();
             case "basepants":
                 return new BasePants();
+            case "baseupkeep":
+                return new BaseUpkeep();
             default:
                 return undefined;
         }
