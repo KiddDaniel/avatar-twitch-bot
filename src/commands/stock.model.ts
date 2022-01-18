@@ -1,3 +1,4 @@
+import { IStockItem } from "src/inventory.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
 
@@ -41,9 +42,9 @@ export class StockCommand implements IChatCommand {
 
     handleDisplayStock(user: string) {
         let data: string = "";
-        const keys: Array<string> = Object.keys(globals.storage.stock.slots);
-        keys.forEach((k: string) => {
-            const str: string = `${k}: ${globals.storage.stock.slots[k].amount}; `;
+        const items: Array<IStockItem> = globals.storage.stock;
+        items.forEach((it: IStockItem) => {
+            const str: string = `${it.item.name}: ${it.amount}; `;
             data = data.concat(str);
         });
         getTwitchClient().say(globals.channels[0], `Hey @${user}, Today we have ${data} in stock.`);

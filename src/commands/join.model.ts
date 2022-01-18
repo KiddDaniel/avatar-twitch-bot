@@ -1,11 +1,13 @@
-import { BadgerMole } from "../items/badgermole";
-import { Dragon } from "../items/dragon";
-import { FlyingBison } from "../items/flyingbison";
-import { PolarBearDog } from "../items/polarbeardog";
-import { Upkeep } from "../items/upkeep";
 import { IPlayer } from "../player.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
+import { Shoe } from "../items/slots/shoe";
+import { Upkeep } from "../items/slots/upkeep";
+import { Chest } from "../items/slots/chest";
+import { Mount } from "../items/slots/mount";
+import { Pants } from "../items/slots/pants";
+import { Coat } from "../items/slots/coat";
+import { Hat } from "../items/slots/hat";
 
 export class JoinCommand implements IChatCommand {
     trigger = "!join";
@@ -90,20 +92,16 @@ export class JoinCommand implements IChatCommand {
                 inventory: {
                     slots: {
                         upkeep: new Upkeep(),
-                        dragon: new Dragon(),
-                        badgermole: new BadgerMole(),
-                        flyingbison: new FlyingBison(),
-                        polarbeardog: new PolarBearDog(),
+                        mount: new Mount(),
+                        shoe: new Shoe(),
+                        chest: new Chest(),
+                        pants: new Pants(),
+                        coat: new Coat(),
+                        hat: new Hat(),
                     },
                 },
                 wallet: 2500, // start money
             };
-
-            const keys: Array<string> = Object.keys(player.inventory.slots);
-            keys.forEach((k: string) => {
-                // properly initialize player inventory
-                player.inventory.slots[k].amount = 0;
-            });
 
             // do nation check, what to do when already associated ?
             if (nation in globals.storage.nations) {

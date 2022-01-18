@@ -1,3 +1,4 @@
+import { IInventoryItem, IInventoryItemSlot } from "src/inventory.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
 
@@ -41,12 +42,16 @@ export class InventoryCommand implements IChatCommand {
 
     handleDisplayInventory(user: string): IChatCommandResult {
         let data: string = "";
-        const keys: Array<string> = Object.keys(globals.storage.players[user].inventory.slots);
-        keys.forEach((k: string) => {
-            const a: number = globals.storage.players[user].inventory.slots[k].amount;
-            if (a > 0) {
-                const str: string = `${k}: ${a}; `;
-                data = data.concat(str);
+        const slots: Array<IInventoryItemSlot> = Object.values(globals.storage.players[user].inventory.slots);
+        slots.forEach((slot: IInventoryItemSlot) => {
+            const { items } = slot;
+            if (items.length > 0) {
+                data = data.concat(`${slot.name} (${items.length}) : ( `);
+                items.forEach((item: IInventoryItem) => {
+                    const str: string = `${item}; `;
+                    data = data.concat(str);
+                });
+                data = data.concat(" )");
             }
         });
 

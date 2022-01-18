@@ -1,4 +1,4 @@
-import { Mount } from "../items/mount";
+import { Mount } from "../items/slots/mount";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { getTwitchClient, globals } from "../twitch-client";
 
@@ -47,11 +47,11 @@ export class MountCommand implements IChatCommand {
         }
 
         const data: string = m.name;
-        const { expire } = m.properties;
+        const { expire } = m;
 
         // calculate remaining duration, approximately
         const days: number = expire / (60 * 60 * 24);
-        const upkeeps: number = globals.storage.players[user].inventory.slots.upkeep.amount;
+        const upkeeps: number = globals.storage.players[user].inventory.slots.upkeep.items.length;
 
         getTwitchClient().say(
             globals.channels[0],

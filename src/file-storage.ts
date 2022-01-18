@@ -1,9 +1,14 @@
-import { BadgerMole } from "./items/badgermole";
-import { Dragon } from "./items/dragon";
-import { FlyingBison } from "./items/flyingbison";
-import { PolarBearDog } from "./items/polarbeardog";
-import { Upkeep } from "./items/upkeep";
+import { BadgerMole } from "./items/mounts/badgermole";
+import { Dragon } from "./items/mounts/dragon";
+import { FlyingBison } from "./items/mounts/flyingbison";
+import { PolarBearDog } from "./items/mounts/polarbeardog";
 import { IStorage } from "./storage.interface";
+import { BaseUpkeep } from "./items/misc/baseupkeep";
+import { BaseShoe } from "./items/equipment/shoes/baseshoe";
+import { BaseChest } from "./items/equipment/chests/basechest";
+import { BaseCoat } from "./items/equipment/coats/basecoat";
+import { BaseHat } from "./items/equipment/hats/basehat";
+import { BasePants } from "./items/equipment/pants/basepants";
 
 const jsonfile = require("jsonfile");
 
@@ -35,15 +40,58 @@ export class FileStorage implements IStorage {
     players = {};
     devs = [];
     nations = {};
-    stock = {
-        slots: {
-            upkeep: new Upkeep(),
-            dragon: new Dragon(),
-            badgermole: new BadgerMole(),
-            flyingbison: new FlyingBison(),
-            polarbeardog: new PolarBearDog(),
+    stock = [
+        {
+            amount: -1,
+            slot: "mount",
+            item: new FlyingBison(),
         },
-    };
+        {
+            amount: -1,
+            slot: "mount",
+            item: new BadgerMole(),
+        },
+        {
+            amount: -1,
+            slot: "mount",
+            item: new Dragon(),
+        },
+        {
+            amount: -1,
+            slot: "mount",
+            item: new PolarBearDog(),
+        },
+        {
+            amount: -1,
+            slot: "upkeep",
+            item: new BaseUpkeep(),
+        },
+        {
+            amount: -1,
+            slot: "shoe",
+            item: new BaseShoe(),
+        },
+        {
+            amount: -1,
+            slot: "coat",
+            item: new BaseCoat(),
+        },
+        {
+            amount: -1,
+            slot: "hat",
+            item: new BaseHat(),
+        },
+        {
+            amount: -1,
+            slot: "chest",
+            item: new BaseChest(),
+        },
+        {
+            amount: -1,
+            slot: "pants",
+            item: new BasePants(),
+        },
+    ];
     filename = "./src/data.json";
 
     // credit: Typescript documentation, src

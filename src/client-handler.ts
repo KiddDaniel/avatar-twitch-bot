@@ -8,7 +8,7 @@ import { MountCommand } from "./commands/mount.model";
 import { PurchaseCommand } from "./commands/purchase.model";
 import { StockCommand } from "./commands/stock.model";
 import { WalletCommand } from "./commands/wallet";
-import { Mount } from "./items/mount";
+import { Mount } from "./items/slots/mount";
 import { getTwitchClient, globals } from "./twitch-client";
 
 const availableCommands: IChatCommand[] = [
