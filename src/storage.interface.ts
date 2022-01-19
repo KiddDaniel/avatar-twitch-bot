@@ -4,8 +4,8 @@ import { IPlayer } from "./player.interface";
 
 export interface IStorage {
     players: Record<string, IPlayer>;
-    devs: string[];
-    nations: Record<string, INation>;
+    devs: Array<string>;
+    nations: Array<INation>;
     stock: Array<IStockItem>; // this is everything the player can buy, what he has is in his own inventory
 
     load(): void;

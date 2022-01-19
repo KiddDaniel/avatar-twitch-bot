@@ -1,7 +1,7 @@
 import * as tmi from "tmi.js";
 import * as dotEnv from "dotenv";
 import { IStorage } from "./storage.interface";
-import { FileStorage } from "./file-storage";
+import { FileStorage } from "./storage/file-storage";
 
 dotEnv.config({ path: "./.env" });
 
@@ -12,7 +12,6 @@ export const globals: {
         password: string;
     };
     channels: string[];
-
     // really need a good place to store the bot-internal structures
     storage: IStorage;
 } = {
