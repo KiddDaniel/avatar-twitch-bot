@@ -17,7 +17,7 @@ export class PurchaseCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -30,8 +30,9 @@ export class PurchaseCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (!(s in globals.storage.players)) {
+        if (!(s in data.players)) {
             return this.error(s, "You cannot purchase anything because you are not registered as player!");
         }
 
@@ -43,15 +44,17 @@ export class PurchaseCommand implements IChatCommand {
         if (normalizedRecipients.length === 1) {
             const user: string = s;
             const item: string = normalizedRecipients[0];
-            return this.handleItemPurchase(user, item);
+            const result: IChatCommandResult = await this.handleItemPurchase(user, item);
+            return result;
         }
 
         return this.error(s, "Please specify which item you wish to purchase !");
     }
 
-    handleItemPurchase(user: string, item: string): IChatCommandResult {
+    async handleItemPurchase(user: string, item: string): Promise<IChatCommandResult> {
         // check items validity
-        const items: Array<IStockItem> = globals.storage.stock;
+        const { data } = globals.storage;
+        const items: Array<IStockItem> = data.stock;
         let piece: IStockItem | undefined;
         items.forEach((it: IStockItem) => {
             if (item === it.item.name) {
@@ -68,7 +71,7 @@ export class PurchaseCommand implements IChatCommand {
         }
 
         // check price aka cost in stock
-        const player: IPlayer = globals.storage.players[user];
+        const player: IPlayer = data.players[user];
         const price: number = piece.item.cost;
         const balance: number = player.wallet;
         const max: number = piece.item.maxAmount;
@@ -109,7 +112,7 @@ export class PurchaseCommand implements IChatCommand {
         }
 
         // successful purchase
-        globals.storage.players[user].wallet -= price;
+        data.players[user].wallet -= price;
         // if the stock has a limit, decrease it, -1 for unlimited
         if (piece.amount > -1) {
             piece.amount -= 1;
@@ -135,10 +138,10 @@ export class PurchaseCommand implements IChatCommand {
                 }
                 // TODO same for calculated stats
             });
-            globals.storage.players[user].inventory.slots[piece.slot].items.push(nitem);
+            data.players[user].inventory.slots[piece.slot].items.push(nitem);
         }
 
-        globals.storage.save();
+        await globals.storage.save();
         getTwitchClient().say(
             globals.channels[0],
             `Hey @${user}, You successfully purchased an item of the type ${item}`,

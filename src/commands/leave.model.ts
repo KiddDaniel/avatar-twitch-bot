@@ -5,7 +5,7 @@ import { getTwitchClient, globals } from "../twitch-client";
 export class LeaveCommand implements IChatCommand {
     trigger = "!leave";
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -18,30 +18,36 @@ export class LeaveCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (globals.storage.devs.includes(s)) {
+        if (data.devs.includes(s)) {
+            let result: IChatCommandResult;
             if (normalizedRecipients.length === 1) {
                 const user: string = normalizedRecipients[0];
-                return this.handlePlayerUnregistration(user);
+                result = await this.handlePlayerUnregistration(user);
+            } else {
+                // testwise self deregistration, only for devs too.
+                result = await this.handlePlayerUnregistration(s);
             }
-            // testwise self deregistration, only for devs too.
-            return this.handlePlayerUnregistration(s);
+
+            return result;
         }
         return { isSuccessful: false };
     }
 
-    handlePlayerUnregistration(player: string): IChatCommandResult {
+    async handlePlayerUnregistration(player: string): Promise<IChatCommandResult> {
         // leave completely, so search in all nation members too.
-        const nations: INation[] = Object.values(globals.storage.nations);
+        const { data } = globals.storage;
+        const nations: INation[] = Object.values(data.nations);
         nations.forEach((x) => {
             if (x.members.includes(player)) {
                 const index: number = x.members.indexOf(player);
                 x.members.splice(index, 1);
             }
         });
-        if (player in globals.storage.players) {
-            delete globals.storage.players[player];
-            globals.storage.save();
+        if (player in data.players) {
+            delete data.players[player];
+            await globals.storage.save();
             getTwitchClient().say(
                 globals.channels[0],
                 `Hey @${player}, you have been unregistered from your nation and as player.`,

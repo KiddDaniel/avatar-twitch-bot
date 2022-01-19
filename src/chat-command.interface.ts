@@ -9,5 +9,5 @@ export interface IChatCommand {
     readonly allowedForMods?: boolean;
     readonly allowedForSubscriber?: boolean;
 
-    execute: (params: string | string[] | null, sender?: string) => IChatCommandResult;
+    execute: (params: string | string[] | null, sender?: string) => Promise<IChatCommandResult>;
 }

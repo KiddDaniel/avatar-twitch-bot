@@ -14,7 +14,7 @@ export class MountCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -27,8 +27,9 @@ export class MountCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (!(s in globals.storage.players)) {
+        if (!(s in data.players)) {
             return this.error(s, "You cannot check your mount because you are not registered as player!");
         }
 
@@ -41,23 +42,23 @@ export class MountCommand implements IChatCommand {
     }
 
     handleDisplayMount(user: string) {
-        const m: Mount | null = Mount.getMount(globals.storage.players[user]);
+        const { data } = globals.storage;
+        const m: Mount | null = Mount.getMount(data.players[user]);
         if (m === null) {
             return this.error(user, "You do not own a mount.");
         }
 
-        const data: string = m.name;
         const { expire } = m.items[0];
 
         // calculate remaining duration, approximately
         const days: number = (expire - Date.now()) / (1000.0 * 60.0 * 60.0 * 24.0);
         const sdays: string = days.toFixed(5);
 
-        const upkeeps: number = globals.storage.players[user].inventory.slots.upkeep.items.length;
+        const upkeeps: number = data.players[user].inventory.slots.upkeep.items.length;
 
         getTwitchClient().say(
             globals.channels[0],
-            `Hey @${user}, Your mount is a ${data} with a lifetime of ${sdays} days with ${upkeeps} upkeeps left.`,
+            `Hey @${user}, Your mount is a ${m.name} with a lifetime of ${sdays} days with ${upkeeps} upkeeps left.`,
         );
 
         return {

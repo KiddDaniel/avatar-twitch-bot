@@ -4,7 +4,7 @@ import { getTwitchClient, globals } from "../twitch-client";
 export class GreetingCommand implements IChatCommand {
     trigger = ["!greeting", "!greetings"];
 
-    execute(recipient: string | string[] | null): IChatCommandResult {
+    async execute(recipient: string | string[] | null): Promise<IChatCommandResult> {
         if (!recipient || recipient.length <= 0) return { isSuccessful: false, error: "no recipient" };
 
         let normalizedRecipients: string[] = [];

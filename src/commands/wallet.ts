@@ -13,7 +13,7 @@ export class WalletCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -26,8 +26,9 @@ export class WalletCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (!(s in globals.storage.players)) {
+        if (!(s in data.players)) {
             return this.error(s, "You cannot view your wallet because you are not registered as player!");
         }
 
@@ -39,9 +40,10 @@ export class WalletCommand implements IChatCommand {
         return this.error(s, "Too many parameters for this command, expected 0 additional parameters.");
     }
 
-    handleDisplayWallet(user: string): IChatCommandResult {
-        const data: number = globals.storage.players[user].wallet;
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${data} Yuan in your wallet.`);
+    async handleDisplayWallet(user: string): Promise<IChatCommandResult> {
+        const { data } = globals.storage;
+        const { wallet } = data.players[user];
+        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${wallet} Yuan in your wallet.`);
 
         return {
             isSuccessful: true,

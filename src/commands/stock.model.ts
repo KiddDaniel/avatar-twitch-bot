@@ -14,7 +14,7 @@ export class StockCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -27,8 +27,9 @@ export class StockCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (!(s in globals.storage.players)) {
+        if (!(s in data.players)) {
             return this.error(s, "You cannot view the stock inventory because you are not registered as player!");
         }
 
@@ -40,14 +41,15 @@ export class StockCommand implements IChatCommand {
         return this.error(s, "Too many parameters for this command, expected 0 additional parameters.");
     }
 
-    handleDisplayStock(user: string) {
-        let data: string = "";
-        const items: Array<IStockItem> = globals.storage.stock;
+    async handleDisplayStock(user: string): Promise<IChatCommandResult> {
+        let display: string = "";
+        const { data } = globals.storage;
+        const items: Array<IStockItem> = data.stock;
         items.forEach((it: IStockItem) => {
             const str: string = `${it.item.name}: ${it.item.cost} (${it.amount}); `;
-            data = data.concat(str);
+            display = display.concat(str);
         });
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, Today we have ${data} in stock.`);
+        getTwitchClient().say(globals.channels[0], `Hey @${user}, Today we have ${display} in stock.`);
 
         return {
             isSuccessful: true,

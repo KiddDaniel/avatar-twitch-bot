@@ -22,7 +22,7 @@ const availableCommands: IChatCommand[] = [
     new WalletCommand(),
 ];
 
-export function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
+export async function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
     if (msg.indexOf("!") < 0) {
         console.log(`* message dropped: no command - message: ${msg}, sender: ${sender.username}`);
         return;
@@ -61,13 +61,14 @@ export function processClientMessage(target: string, sender: tmi.Userstate, msg:
     }
 
     // refresh storage here
-    globals.storage.load();
+    await globals.storage.load();
+    const { data } = globals.storage;
 
     // check recipients mount (if the sender is a player)
-    if (sender.username in globals.storage.players) {
-        const mesg: string = Mount.checkSelfDestruct(globals.storage.players[sender.username]);
+    if (sender.username in data.players) {
+        const mesg: string = Mount.checkSelfDestruct(data.players[sender.username]);
         if (mesg !== "") {
-            globals.storage.save();
+            await globals.storage.save();
             getTwitchClient().say(globals.channels[0], `Hey @${sender.username}, ${mesg}`);
         }
     }

@@ -22,7 +22,7 @@ export class JoinCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -35,9 +35,10 @@ export class JoinCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
         // dev permission check
-        if (globals.storage.devs.includes(s)) {
+        if (data.devs.includes(s)) {
             if (normalizedRecipients.length === 2) {
                 const user: string = normalizedRecipients[0];
                 const nation: string = normalizedRecipients[1];
@@ -64,16 +65,17 @@ export class JoinCommand implements IChatCommand {
         return this.error(s, "Please specify nation as user to apply for registration into a nation by a dev");
     }
 
-    handlePlayerRegistration(sender: string, user: string, nation: string): IChatCommandResult {
+    async handlePlayerRegistration(sender: string, user: string, nation: string): Promise<IChatCommandResult> {
         // potentially many players, would be slow to iterate over the whole array to find them
         // better keep this a record here
-        if (user in globals.storage.players) {
+        const { data } = globals.storage;
+        if (user in data.players) {
             return this.error(user, `You are already registered as player.`);
         }
 
         const player: IPlayer = {
             isRegistered: true,
-            isDeveloper: globals.storage.devs.includes(user),
+            isDeveloper: data.devs.includes(user),
             name: user,
             nation,
             // TODO set stats here and possible start items
@@ -107,7 +109,7 @@ export class JoinCommand implements IChatCommand {
         let inOtherNation: boolean = false;
         let destiNation: INation | undefined;
         const nationNames: Array<string> = [];
-        globals.storage.nations.forEach((n: INation) => {
+        data.nations.forEach((n: INation) => {
             if (n.name === nation) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 destiNation = n;
@@ -127,8 +129,8 @@ export class JoinCommand implements IChatCommand {
             return this.error(user, `You are already registered in the nation of ${nation}`);
         }
         destiNation.members.push(user);
-        globals.storage.players[user] = player;
-        globals.storage.save();
+        data.players[user] = player;
+        await globals.storage.save();
         getTwitchClient().say(
             globals.channels[0],
             `Hey @${user}, 
@@ -139,15 +141,16 @@ export class JoinCommand implements IChatCommand {
     }
 
     showRegistrationInfo(sender: string, nation: string): IChatCommandResult {
+        const { data } = globals.storage;
         const url: string = "https://avatar-twitch-bot.com/register";
         const nationNames: Array<string> = [];
-        globals.storage.nations.forEach((n: INation) => {
+        data.nations.forEach((n: INation) => {
             if (n.name === nation) {
                 nationNames.push(n.name);
             }
         });
 
-        if (nation in globals.storage.nations) {
+        if (nation in data.nations) {
             getTwitchClient().say(
                 globals.channels[0],
                 `Hey @${sender}, 

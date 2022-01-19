@@ -14,7 +14,7 @@ export class InventoryCommand implements IChatCommand {
         };
     }
 
-    execute(recipient: string | string[] | null, sender?: string): IChatCommandResult {
+    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
         if (sender === undefined) return { isSuccessful: false, error: "no sender" };
 
         let normalizedRecipients: string[] = [];
@@ -27,8 +27,9 @@ export class InventoryCommand implements IChatCommand {
         }
 
         const s: string = sender;
+        const { data } = globals.storage;
 
-        if (!(s in globals.storage.players)) {
+        if (!(s in data.players)) {
             return this.error(s, "You cannot view your inventory because you are not registered as player!");
         }
 
@@ -41,25 +42,26 @@ export class InventoryCommand implements IChatCommand {
     }
 
     handleDisplayInventory(user: string): IChatCommandResult {
-        let data: string = "";
-        const slots: Array<IInventoryItemSlot> = Object.values(globals.storage.players[user].inventory.slots);
+        const { data } = globals.storage;
+        let display: string = "";
+        const slots: Array<IInventoryItemSlot> = Object.values(data.players[user].inventory.slots);
         slots.forEach((slot: IInventoryItemSlot) => {
             const { items } = slot;
             if (items.length > 0) {
-                data = data.concat(`${slot.name} (${items.length}) : ( `);
+                display = display.concat(`${slot.name} (${items.length}) : ( `);
                 items.forEach((item: IInventoryItem) => {
                     const str: string = `${item.name}; `;
-                    data = data.concat(str);
+                    display = display.concat(str);
                 });
-                data = data.concat(") ");
+                display = display.concat(") ");
             }
         });
 
-        if (data === "") {
-            data = "nothing";
+        if (display === "") {
+            display = "nothing";
         }
 
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${data} in your inventory.`);
+        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${display} in your inventory.`);
 
         return {
             isSuccessful: true,
