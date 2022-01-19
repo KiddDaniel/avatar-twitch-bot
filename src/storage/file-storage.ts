@@ -10,11 +10,17 @@ export class FileStorage extends Storage {
             jsonfile.readFile(this.filename, (err: any, data: any) => {
                 if (err) {
                     console.log(`Error reading file from disk: ${err}`);
+                    // create empty file with filename
+                    jsonfile.writeFile(this.filename, {}, { spaces: 4 }, (error: any) => {
+                        if (!error) {
+                            console.log("File was initialized");
+                        }
+                    });
                     resolve();
                 } else {
                     const keys: string[] = Object.keys(data);
                     keys.forEach((k) => {
-                        this.setProperty(k as keyof IDataSet, data.data[k]);
+                        this.setProperty(k as keyof IDataSet, data[k]);
                     });
                     console.log(`File is read successfully!`);
                     resolve();

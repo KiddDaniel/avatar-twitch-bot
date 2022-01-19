@@ -1,8 +1,7 @@
 import * as tmi from "tmi.js";
 import * as dotEnv from "dotenv";
 import { IStorage } from "./storage.interface";
-import { MongoDBStorage } from "./storage/mongodb-storage";
-// import { FileStorage } from "./storage/file-storage";
+import { FileStorage } from "./storage/file-storage";
 
 dotEnv.config({ path: "./.env" });
 const channels: string[] = process.env.CHANNELS!.split(",");
@@ -23,8 +22,7 @@ export const globals: {
         password: process.env.PASSWORD!,
     },
     channels,
-    // storage: new FileStorage(channels[0]),
-    storage: new MongoDBStorage(channels[0]),
+    storage: new FileStorage(channels[0]),
 };
 
 export function getTwitchClient(): tmi.Client {
