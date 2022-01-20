@@ -1,12 +1,13 @@
 import { INation } from "src/nation.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
+import { CommandBase } from "./base.model";
 
-export class LeaveCommand implements IChatCommand {
+export class LeaveCommand extends CommandBase implements IChatCommand {
     trigger = "!leave";
 
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available.");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -32,7 +33,7 @@ export class LeaveCommand implements IChatCommand {
 
             return result;
         }
-        return { isSuccessful: false };
+        return this.error(s, "You cannot leave the game on your own, ask a dev to unregister you!");
     }
 
     async handlePlayerUnregistration(player: string): Promise<IChatCommandResult> {
@@ -48,24 +49,12 @@ export class LeaveCommand implements IChatCommand {
         if (player in data.players) {
             delete data.players[player];
             await globals.storage.save();
-            getTwitchClient().say(
-                globals.channels[0],
-                `Hey @${player}, you have been unregistered from your nation and as player.`,
-            );
-
             return {
                 isSuccessful: true,
+                messages: [`Hey @${player}, you have been unregistered from your nation and as player.`],
             };
         }
 
-        getTwitchClient().say(
-            globals.channels[0],
-            `Hey @${player}, you are not registered as player, so you cannot unregister.`,
-        );
-
-        return {
-            isSuccessful: false,
-            error: "player was not registered",
-        };
+        return this.error(player, "you are not registered as player, so you cannot unregister.");
     }
 }

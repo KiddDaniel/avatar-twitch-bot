@@ -13,7 +13,6 @@ export const globals: {
         password: string;
     };
     channels: string[];
-    // really need a good place to store the bot-internal structures
     storage: IStorage;
 } = {
     twitchClient: null,

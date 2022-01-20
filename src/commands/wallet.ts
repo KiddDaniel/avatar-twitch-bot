@@ -1,20 +1,12 @@
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
+import { CommandBase } from "./base.model";
 
-export class WalletCommand implements IChatCommand {
+export class WalletCommand extends CommandBase implements IChatCommand {
     trigger = "!wallet";
 
-    error(s: string, msg: string) {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available.");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -43,10 +35,10 @@ export class WalletCommand implements IChatCommand {
     async handleDisplayWallet(user: string): Promise<IChatCommandResult> {
         const { data } = globals.storage;
         const { wallet } = data.players[user];
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${wallet} Yuan in your wallet.`);
 
         return {
             isSuccessful: true,
+            messages: [`Hey @${user}, You have ${wallet} Yuan in your wallet.`],
         };
     }
 }

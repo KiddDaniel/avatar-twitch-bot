@@ -1,21 +1,13 @@
 import { IStockItem } from "src/inventory.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
+import { CommandBase } from "./base.model";
 
-export class StockCommand implements IChatCommand {
+export class StockCommand extends CommandBase implements IChatCommand {
     trigger = "!stock";
 
-    error(s: string, msg: string) {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available.");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -49,10 +41,10 @@ export class StockCommand implements IChatCommand {
             const str: string = `${it.item.name}: ${it.item.cost} (${it.amount}); `;
             display = display.concat(str);
         });
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, Today we have ${display} in stock.`);
 
         return {
             isSuccessful: true,
+            messages: [`Hey @${user}, Today we have ${display} in stock.`],
         };
     }
 }

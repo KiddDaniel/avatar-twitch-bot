@@ -1,21 +1,13 @@
 import { Mount } from "../items/slots/mount";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
+import { CommandBase } from "./base.model";
 
-export class MountCommand implements IChatCommand {
+export class MountCommand extends CommandBase implements IChatCommand {
     trigger = "!mount";
 
-    error(s: string, msg: string) {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -56,13 +48,12 @@ export class MountCommand implements IChatCommand {
 
         const upkeeps: number = data.players[user].inventory.slots.upkeep.items.length;
 
-        getTwitchClient().say(
-            globals.channels[0],
-            `Hey @${user}, Your mount is a ${m.name} with a lifetime of ${sdays} days with ${upkeeps} upkeeps left.`,
-        );
-
         return {
             isSuccessful: true,
+            messages: [
+                `Hey @${user}, your mount is a ${m.name} with a lifetime of ${sdays} days 
+            with ${upkeeps} upkeeps left.`,
+            ],
         };
     }
 }

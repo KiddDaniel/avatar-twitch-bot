@@ -1,21 +1,13 @@
 import { IInventoryItem, IInventoryItemSlot } from "src/inventory.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
+import { CommandBase } from "./base.model";
 
-export class InventoryCommand implements IChatCommand {
+export class InventoryCommand extends CommandBase implements IChatCommand {
     trigger = "!inventory";
 
-    error(s: string, msg: string) {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available.");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -61,10 +53,9 @@ export class InventoryCommand implements IChatCommand {
             display = "nothing";
         }
 
-        getTwitchClient().say(globals.channels[0], `Hey @${user}, You have ${display} in your inventory.`);
-
         return {
             isSuccessful: true,
+            messages: [`Hey @${user}, You have ${display} in your inventory.`],
         };
     }
 }

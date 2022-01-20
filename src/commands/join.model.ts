@@ -1,6 +1,6 @@
 import { IPlayer } from "../player.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
 import { Shoe } from "../items/slots/shoe";
 import { Upkeep } from "../items/slots/upkeep";
 import { Chest } from "../items/slots/chest";
@@ -9,21 +9,13 @@ import { Pants } from "../items/slots/pants";
 import { Coat } from "../items/slots/coat";
 import { Hat } from "../items/slots/hat";
 import { INation } from "../nation.interface";
+import { CommandBase } from "./base.model";
 
-export class JoinCommand implements IChatCommand {
+export class JoinCommand extends CommandBase implements IChatCommand {
     trigger = "!join";
 
-    error(s: string, msg: string): IChatCommandResult {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -131,13 +123,10 @@ export class JoinCommand implements IChatCommand {
         destiNation.members.push(user);
         data.players[user] = player;
         await globals.storage.save();
-        getTwitchClient().say(
-            globals.channels[0],
-            `Hey @${user}, 
-            you are now registered in the nation of ${destiNation.name}`,
-        );
-
-        return { isSuccessful: true };
+        return {
+            isSuccessful: true,
+            messages: [`Hey @${user}, you are now registered in the nation of ${destiNation.name}`],
+        };
     }
 
     showRegistrationInfo(sender: string, nation: string): IChatCommandResult {
@@ -151,12 +140,10 @@ export class JoinCommand implements IChatCommand {
         });
 
         if (nation in data.nations) {
-            getTwitchClient().say(
-                globals.channels[0],
-                `Hey @${sender}, 
-                you can register in the nation of ${nation} under ${url}`,
-            );
-            return { isSuccessful: true };
+            return {
+                isSuccessful: true,
+                messages: [`Hey @${sender},you can register in the nation of ${nation} under ${url}`],
+            };
         }
 
         return this.error(sender, `Valid nations to join are: ${nationNames}`);

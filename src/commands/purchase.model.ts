@@ -2,23 +2,15 @@ import { IInventoryItem, IStockItem } from "../inventory.interface";
 import { Mount } from "../items/slots/mount";
 import { IPlayer } from "../player.interface";
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { getTwitchClient, globals } from "../twitch-client";
+import { globals } from "../twitch-client";
 import { ItemFactory } from "../items/factory";
+import { CommandBase } from "./base.model";
 
-export class PurchaseCommand implements IChatCommand {
+export class PurchaseCommand extends CommandBase implements IChatCommand {
     trigger = "!purchase";
 
-    error(s: string, msg: string) {
-        getTwitchClient().say(globals.channels[0], `Hey @${s}, ${msg}`);
-
-        return {
-            isSuccessful: false,
-            error: msg,
-        };
-    }
-
     async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return { isSuccessful: false, error: "no sender" };
+        if (sender === undefined) return this.error(sender, "No sender available");
 
         let normalizedRecipients: string[] = [];
         if (recipient) {
@@ -142,13 +134,9 @@ export class PurchaseCommand implements IChatCommand {
         }
 
         await globals.storage.save();
-        getTwitchClient().say(
-            globals.channels[0],
-            `Hey @${user}, You successfully purchased an item of the type ${item}`,
-        );
-
         return {
             isSuccessful: true,
+            messages: [`Hey @${user}, You successfully purchased an item of the type ${item}`],
         };
     }
 }
