@@ -20,10 +20,10 @@ const availableCommands: IChatCommand[] = [
     new WalletCommand(),
 ];
 
-export function validateCommand(sender: tmi.Userstate, msg: string): IChatCommandContext | undefined {
+export function validateCommands(sender: tmi.Userstate, msg: string): IChatCommandContext[] {
     if (msg.indexOf("!") < 0) {
         console.log(`* message dropped: no command - message: ${msg}, sender: ${sender.username}`);
-        return undefined;
+        return [];
     }
 
     // console.log(`* command received: no command - message: ${msg}, sender: ${sender.username}`);
@@ -31,40 +31,48 @@ export function validateCommand(sender: tmi.Userstate, msg: string): IChatComman
     const commandsWithReceiver = msg.match(/^(!\w+)(\s+@?\w+)*/g);
     if (!commandsWithReceiver || commandsWithReceiver.length <= 0) {
         console.log(`* command dropped: no command - message: ${msg}, sender: ${sender.username}`);
-        return undefined;
+        return [];
     }
 
-    const firstCommandWithReceivers = commandsWithReceiver[0].trim().toLowerCase();
-    const matchingAvailableCommand = availableCommands.find(
-        (x) =>
-            (!Array.isArray(x.trigger) && firstCommandWithReceivers.indexOf(x.trigger.toLowerCase()) === 0) ||
-            (Array.isArray(x.trigger) &&
-                x.trigger.some((trigger) => firstCommandWithReceivers.indexOf(trigger.toLowerCase()) === 0)),
-    );
+    const contexts: IChatCommandContext[] = [];
 
-    if (!matchingAvailableCommand) {
-        console.log("* dropping command: no handler found");
-        return undefined;
-    }
+    commandsWithReceiver.forEach((command: string) => {
+        const commandWithReceivers = command.trim().toLowerCase();
+        const matchingAvailableCommand = availableCommands.find(
+            (x) =>
+                (!Array.isArray(x.trigger) && commandWithReceivers.indexOf(x.trigger.toLowerCase()) === 0) ||
+                (Array.isArray(x.trigger) &&
+                    x.trigger.some((trigger) => commandWithReceivers.indexOf(trigger.toLowerCase()) === 0)),
+        );
 
-    if (
-        !matchingAvailableCommand.permittedUsers?.some((x) => x.toLowerCase() === sender.username?.toLowerCase()) &&
-        (matchingAvailableCommand.allowedForMods || matchingAvailableCommand.allowedForSubscriber) &&
-        (!(matchingAvailableCommand.allowedForMods && sender.mod) ||
-            !(matchingAvailableCommand.allowedForSubscriber && sender.subscriber))
-    ) {
-        console.log(`* dropping command: no permission ${sender.username}: ${msg}`);
-        return undefined;
-    }
+        if (!matchingAvailableCommand) {
+            console.log("* dropping command: no handler found");
+            return;
+        }
 
-    // split command off
-    const recipientsArray = firstCommandWithReceivers.match(/(\s+@?\w+)+/g);
-    if (recipientsArray) {
-        // tokenize
-        const recipients = recipientsArray[0].match(/\w+/g);
-        return { command: matchingAvailableCommand, sender, recipients, message: msg };
-    }
+        if (
+            !matchingAvailableCommand.permittedUsers?.some((x) => x.toLowerCase() === sender.username?.toLowerCase()) &&
+            (matchingAvailableCommand.allowedForMods || matchingAvailableCommand.allowedForSubscriber) &&
+            (!(matchingAvailableCommand.allowedForMods && sender.mod) ||
+                !(matchingAvailableCommand.allowedForSubscriber && sender.subscriber))
+        ) {
+            console.log(`* dropping command: no permission ${sender.username}: ${msg}`);
+            return;
+        }
 
-    // only the command trigger (and the sender)
-    return { command: matchingAvailableCommand, sender, recipients: null, message: msg };
+        // split command off
+        const recipientsArray = commandWithReceivers.match(/(\s+@?\w+)+/g);
+        let normalizedRecipients: string[] = [];
+        if (recipientsArray) {
+            // tokenize
+            const recps = recipientsArray[0].match(/\w+/g);
+            if (recps) {
+                normalizedRecipients = recps.map((x) => x.replace("@", ""));
+            }
+        }
+
+        contexts.push({ command: matchingAvailableCommand, sender: sender.username, recipients: normalizedRecipients });
+    });
+
+    return contexts;
 }

@@ -1,18 +1,17 @@
 import * as tmi from "tmi.js";
-import { validateCommand } from "./chat-command-validator";
+import { validateCommands } from "./chat-command-validator";
 import { IChatCommandContext, IChatCommandResult } from "./chat-command.interface";
 import { getTwitchClient, globals } from "./twitch-client";
 
 export async function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
-    const context: IChatCommandContext | undefined = validateCommand(sender, msg);
-    if (!context) {
-        return;
-    }
+    const contexts: IChatCommandContext[] = validateCommands(sender, msg);
 
-    const result: IChatCommandResult = await context.command.execute(context.recipients, context.sender.username);
-    if (!result.isSuccessful) {
-        console.log(result.error);
-    }
+    contexts.forEach(async (context: IChatCommandContext) => {
+        const result: IChatCommandResult = await context.command.execute(context.recipients, context.sender.username);
+        if (!result.isSuccessful) {
+            console.log(result.error);
+        }
 
-    result.messages.forEach((mesg: string) => getTwitchClient().say(globals.channels[0], mesg));
+        result.messages.forEach((mesg: string) => getTwitchClient().say(globals.channels[0], mesg));
+    });
 }

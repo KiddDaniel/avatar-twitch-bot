@@ -14,18 +14,7 @@ import { CommandBase } from "./base.model";
 export class JoinCommand extends CommandBase implements IChatCommand {
     trigger = "!join";
 
-    async execute(recipient: string | string[] | null, sender?: string): Promise<IChatCommandResult> {
-        if (sender === undefined) return this.error(sender, "No sender available");
-
-        let normalizedRecipients: string[] = [];
-        if (recipient) {
-            if (Array.isArray(recipient)) {
-                normalizedRecipients = recipient.map((x) => x.replace("@", ""));
-            } else {
-                normalizedRecipients = [recipient.replace("@", "")];
-            }
-        }
-
+    async execute(normalizedRecipients: string[], sender: string): Promise<IChatCommandResult> {
         const s: string = sender;
         const { data } = globals.storage;
 

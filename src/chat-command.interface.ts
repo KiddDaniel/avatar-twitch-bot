@@ -3,8 +3,7 @@ import { Userstate } from "tmi.js";
 export interface IChatCommandContext {
     command: IChatCommand;
     sender: Userstate;
-    recipients: RegExpMatchArray | null;
-    message: string;
+    recipients: string[];
 }
 export interface IChatCommandResult {
     readonly isSuccessful: boolean;
@@ -18,5 +17,5 @@ export interface IChatCommand {
     readonly allowedForMods?: boolean;
     readonly allowedForSubscriber?: boolean;
 
-    execute: (params: RegExpMatchArray | null, sender?: string) => Promise<IChatCommandResult>;
+    execute: (params: string[], sender: string) => Promise<IChatCommandResult>;
 }
