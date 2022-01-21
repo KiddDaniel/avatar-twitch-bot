@@ -1,10 +1,9 @@
 import { INation } from "src/nation.interface";
-import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
+import { error, IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { globals } from "../twitch-client";
-import { CommandBase } from "./base.model";
 
-export class LeaveCommand extends CommandBase implements IChatCommand {
-    trigger = "!leave";
+export class LeaveCommand implements IChatCommand {
+    trigger = ["!leave"];
 
     async execute(normalizedRecipients: string[], sender: string): Promise<IChatCommandResult> {
         const s: string = sender;
@@ -22,7 +21,7 @@ export class LeaveCommand extends CommandBase implements IChatCommand {
 
             return result;
         }
-        return this.error(s, "You cannot leave the game on your own, ask a dev to unregister you!");
+        return error(s, "You cannot leave the game on your own, ask a dev to unregister you!");
     }
 
     async handlePlayerUnregistration(player: string): Promise<IChatCommandResult> {
@@ -44,6 +43,6 @@ export class LeaveCommand extends CommandBase implements IChatCommand {
             };
         }
 
-        return this.error(player, "you are not registered as player, so you cannot unregister.");
+        return error(player, "you are not registered as player, so you cannot unregister.");
     }
 }

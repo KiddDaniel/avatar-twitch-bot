@@ -1,17 +1,16 @@
 import { Mount } from "../items/slots/mount";
-import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
+import { error, IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { globals } from "../twitch-client";
-import { CommandBase } from "./base.model";
 
-export class MountCommand extends CommandBase implements IChatCommand {
-    trigger = "!mount";
+export class MountCommand implements IChatCommand {
+    trigger = ["!mount"];
 
     async execute(normalizedRecipients: string[], sender: string): Promise<IChatCommandResult> {
         const s: string = sender;
         const { data } = globals.storage;
 
         if (!(s in data.players)) {
-            return this.error(s, "You cannot check your mount because you are not registered as player!");
+            return error(s, "You cannot check your mount because you are not registered as player!");
         }
 
         if (normalizedRecipients.length === 0) {
@@ -19,14 +18,14 @@ export class MountCommand extends CommandBase implements IChatCommand {
             return this.handleDisplayMount(user);
         }
 
-        return this.error(s, "Too many parameters for this command, expected 0 additional parameters.");
+        return error(s, "Too many parameters for this command, expected 0 additional parameters.");
     }
 
     handleDisplayMount(user: string) {
         const { data } = globals.storage;
         const m: Mount | null = Mount.getMount(data.players[user]);
         if (m === null) {
-            return this.error(user, "You do not own a mount.");
+            return error(user, "You do not own a mount.");
         }
 
         const { expire } = m.items[0];

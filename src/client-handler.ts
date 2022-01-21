@@ -7,7 +7,8 @@ export async function processClientMessage(target: string, sender: tmi.Userstate
     const contexts: IChatCommandContext[] = validateCommands(sender, msg);
 
     contexts.forEach(async (context: IChatCommandContext) => {
-        const result: IChatCommandResult = await context.command.execute(context.recipients, context.sender.username);
+        const s: string = context.sender.username;
+        const result: IChatCommandResult = await context.command.execute(context.recipients, s);
         if (!result.isSuccessful) {
             console.log(result.error);
         }

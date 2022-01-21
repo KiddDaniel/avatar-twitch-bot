@@ -10,7 +10,7 @@ export interface IStockItem {
 
 export interface IInventoryItemSlot {
     name: string;
-    items: Array<IInventoryItem>;
+    items: Array<IInventoryItem>; // limit this with purchase logic, equipment is max amount 1
 }
 
 export interface IInventoryItem {

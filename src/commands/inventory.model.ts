@@ -1,50 +1,61 @@
 import { IInventoryItem, IInventoryItemSlot } from "src/inventory.interface";
-import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
+import { IPlayer } from "src/player.interface";
+import { error, IChatCommand, IChatCommandResult } from "../chat-command.interface";
 import { globals } from "../twitch-client";
-import { CommandBase } from "./base.model";
 
-export class InventoryCommand extends CommandBase implements IChatCommand {
-    trigger = "!inventory";
-
-    async execute(normalizedRecipients: string[], sender: string): Promise<IChatCommandResult> {
-        const s: string = sender;
-        const { data } = globals.storage;
-
-        if (!(s in data.players)) {
-            return this.error(s, "You cannot view your inventory because you are not registered as player!");
+export function printInventory(p: IPlayer) {
+    let inventory: string = "";
+    const slots: Array<IInventoryItemSlot> = Object.values(p.inventory.slots);
+    slots.forEach((slot: IInventoryItemSlot) => {
+        const { items } = slot;
+        if (items.length > 0) {
+            inventory = inventory.concat(`${slot.name} (${items.length}) : ( `);
+            items.forEach((item: IInventoryItem) => {
+                const str: string = `${item.name}; `;
+                inventory = inventory.concat(str);
+            });
+            inventory = inventory.concat(") ");
         }
+    });
 
-        if (normalizedRecipients.length === 0) {
-            const user: string = s;
-            return this.handleDisplayInventory(user);
-        }
-
-        return this.error(s, "Too many parameters for this command, expected 0 additional parameters.");
+    if (inventory === "") {
+        inventory = "nothing";
     }
 
-    handleDisplayInventory(user: string): IChatCommandResult {
-        const { data } = globals.storage;
-        let display: string = "";
-        const slots: Array<IInventoryItemSlot> = Object.values(data.players[user].inventory.slots);
-        slots.forEach((slot: IInventoryItemSlot) => {
-            const { items } = slot;
-            if (items.length > 0) {
-                display = display.concat(`${slot.name} (${items.length}) : ( `);
-                items.forEach((item: IInventoryItem) => {
-                    const str: string = `${item.name}; `;
-                    display = display.concat(str);
-                });
-                display = display.concat(") ");
-            }
-        });
+    return inventory;
+}
 
-        if (display === "") {
-            display = "nothing";
+export class InventoryCommand implements IChatCommand {
+    trigger = ["!inventory"];
+
+    async execute(recipients: string[], sender: string): Promise<IChatCommandResult> {
+        const ret: IChatCommandResult = { isSuccessful: true, messages: [] };
+        const { data } = globals.storage;
+        let inventory: string = "";
+
+        if (recipients.length === 0) {
+            const user: string = sender;
+            if (!(user in data.players)) {
+                return error(user, "You cannot view your inventory because you are not registered as player!");
+            }
+            const player: IPlayer = data.players[user];
+            inventory = printInventory(player);
+            ret.messages.push(`Hey @${user}, You have ${inventory} as inventory.`);
+        } else if (recipients.length === 1) {
+            const user: string = recipients[0];
+            if (!(user in data.players)) {
+                return error(
+                    user,
+                    `You cannot view the inventory of user ${user} because he/she is not registered as player!`,
+                );
+            }
+            const player: IPlayer = data.players[user];
+            inventory = printInventory(player);
+            ret.messages.push(`Hey @${sender}, user ${user} has ${inventory} as inventory.`);
+        } else {
+            return error(undefined, "Too many parameters for this command, expected 0 or 1 additional parameters.");
         }
 
-        return {
-            isSuccessful: true,
-            messages: [`Hey @${user}, You have ${display} in your inventory.`],
-        };
+        return ret;
     }
 }

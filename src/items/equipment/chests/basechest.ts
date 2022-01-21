@@ -7,5 +7,5 @@ export class BaseChest implements IChest {
     nation = "";
     statRequired = { level: -1 };
     cost = 20;
-    statInfluence = { HP: 1 };
+    statInfluence = { hp: 1 };
 }

@@ -1,7 +1,6 @@
 import { IChatCommand, IChatCommandResult } from "../chat-command.interface";
-import { CommandBase } from "./base.model";
 
-export class GreetingCommand extends CommandBase implements IChatCommand {
+export class GreetingCommand implements IChatCommand {
     trigger = ["!greeting", "!greetings"];
 
     async execute(recipients: string[]): Promise<IChatCommandResult> {

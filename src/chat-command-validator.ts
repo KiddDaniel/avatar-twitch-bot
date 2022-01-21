@@ -5,11 +5,13 @@ import { InventoryCommand } from "./commands/inventory.model";
 import { JoinCommand } from "./commands/join.model";
 import { LeaveCommand } from "./commands/leave.model";
 import { MountCommand } from "./commands/mount.model";
+import { ProfileCommand } from "./commands/profile.model";
 import { PurchaseCommand } from "./commands/purchase.model";
+import { StatsCommand } from "./commands/stats.model";
 import { StockCommand } from "./commands/stock.model";
 import { WalletCommand } from "./commands/wallet";
 
-const availableCommands: IChatCommand[] = [
+export const availableCommands: IChatCommand[] = [
     new GreetingCommand(),
     new JoinCommand(),
     new LeaveCommand(),
@@ -18,6 +20,8 @@ const availableCommands: IChatCommand[] = [
     new StockCommand(),
     new InventoryCommand(),
     new WalletCommand(),
+    new ProfileCommand(),
+    new StatsCommand(),
 ];
 
 export function validateCommands(sender: tmi.Userstate, msg: string): IChatCommandContext[] {
@@ -38,11 +42,8 @@ export function validateCommands(sender: tmi.Userstate, msg: string): IChatComma
 
     commandsWithReceiver.forEach((command: string) => {
         const commandWithReceivers = command.trim().toLowerCase();
-        const matchingAvailableCommand = availableCommands.find(
-            (x) =>
-                (!Array.isArray(x.trigger) && commandWithReceivers.indexOf(x.trigger.toLowerCase()) === 0) ||
-                (Array.isArray(x.trigger) &&
-                    x.trigger.some((trigger) => commandWithReceivers.indexOf(trigger.toLowerCase()) === 0)),
+        const matchingAvailableCommand = availableCommands.find((x) =>
+            x.trigger.some((trigger) => commandWithReceivers.indexOf(trigger.toLowerCase()) === 0),
         );
 
         if (!matchingAvailableCommand) {
@@ -63,6 +64,7 @@ export function validateCommands(sender: tmi.Userstate, msg: string): IChatComma
         // split command off
         const recipientsArray = commandWithReceivers.match(/(\s+@?\w+)+/g);
         let normalizedRecipients: string[] = [];
+
         if (recipientsArray) {
             // tokenize
             const recps = recipientsArray[0].match(/\w+/g);
@@ -71,7 +73,7 @@ export function validateCommands(sender: tmi.Userstate, msg: string): IChatComma
             }
         }
 
-        contexts.push({ command: matchingAvailableCommand, sender: sender.username, recipients: normalizedRecipients });
+        contexts.push({ command: matchingAvailableCommand, sender, recipients: normalizedRecipients });
     });
 
     return contexts;
