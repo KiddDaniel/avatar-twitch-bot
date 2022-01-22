@@ -16,12 +16,16 @@ export interface IChatCommand {
     readonly permittedUsers?: string[];
     readonly allowedForMods?: boolean;
     readonly allowedForSubscriber?: boolean;
+    readonly allowedForStreamer?: boolean;
+    readonly allowedForFollower?: boolean;
+    readonly cooldown?: number; // in milliseconds please
+    lastExecuted?: number; // timestamp of last execution, for global cooldowns
 
     execute: (params: string[], sender: string) => Promise<IChatCommandResult>;
 }
 
 export function error(s: string | undefined, msg: string) {
-    console.log("S", s);
+    // console.log("S", s);
     return {
         isSuccessful: false,
         error: msg,

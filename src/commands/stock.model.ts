@@ -3,7 +3,7 @@ import { error, IChatCommand, IChatCommandResult } from "../chat-command.interfa
 import { globals } from "../twitch-client";
 
 export class StockCommand implements IChatCommand {
-    trigger = ["!stock", "!purchaseable"];
+    trigger = ["!stock", "!purchasable"];
 
     async execute(normalizedRecipients: string[], sender: string): Promise<IChatCommandResult> {
         const s: string = sender;

@@ -40,18 +40,20 @@ export class InventoryCommand implements IChatCommand {
             }
             const player: IPlayer = data.players[user];
             inventory = printInventory(player);
-            ret.messages.push(`Hey @${user}, You have ${inventory} as inventory.`);
+            const yuan: string = player.wallet.toString();
+            ret.messages.push(`Hey @${user}, You have ${inventory} as inventory and ${yuan} in your wallet.`);
         } else if (recipients.length === 1) {
             const user: string = recipients[0];
             if (!(user in data.players)) {
                 return error(
-                    user,
+                    sender,
                     `You cannot view the inventory of user ${user} because he/she is not registered as player!`,
                 );
             }
             const player: IPlayer = data.players[user];
             inventory = printInventory(player);
-            ret.messages.push(`Hey @${sender}, user ${user} has ${inventory} as inventory.`);
+            const yuan: string = player.wallet.toString();
+            ret.messages.push(`Hey @${sender}, user ${user} has ${inventory} as inventory and ${yuan} in wallet.`);
         } else {
             return error(undefined, "Too many parameters for this command, expected 0 or 1 additional parameters.");
         }

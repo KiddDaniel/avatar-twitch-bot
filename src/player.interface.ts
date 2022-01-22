@@ -94,4 +94,5 @@ export interface IPlayer {
     level: number;
     rank: string;
     wallet: number; // players money is here
+    cooldown: Record<string, number>; // store personal cooldowns here
 }

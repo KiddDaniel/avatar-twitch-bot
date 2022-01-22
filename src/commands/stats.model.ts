@@ -32,23 +32,33 @@ export class StatsCommand implements IChatCommand {
             if (!(user in data.players)) {
                 return error(user, "You cannot view your stats because you are not registered as player!");
             }
-            const player: IPlayer = data.players[user];
-            const profile: string = printStats(player);
+            const p: IPlayer = data.players[user];
+            let stats: string = "";
+            stats = stats.concat("Rank: ", p.rank, "; ");
+            stats = stats.concat("Level: ", p.level.toString(), "; ");
+            stats = stats.concat("XP: ", p.xp.toString(), "; ");
+            stats = stats.concat("Up at: ", p.threshold.toString(), "; ");
+            stats = stats.concat("Stats: ", printStats(p), "; ");
 
-            ret.messages.push(`Hey ${sender}, your stats: ${profile}`);
+            ret.messages.push(`Hey ${sender}, your stats: ${stats}`);
             console.log(ret);
         } else if (recipients.length === 1) {
-            const user: string = sender;
+            const user: string = recipients[0];
             if (!(user in data.players)) {
                 return error(
-                    user,
+                    sender,
                     `You cannot view the stats of user ${user} because he/she is not registered as player!`,
                 );
             }
-            const player: IPlayer = data.players[user];
-            const profile: string = printStats(player);
+            const p: IPlayer = data.players[user];
+            let stats: string = "";
+            stats = stats.concat("Rank: ", p.rank, "; ");
+            stats = stats.concat("Level: ", p.level.toString(), "; ");
+            stats = stats.concat("XP: ", p.xp.toString(), "; ");
+            stats = stats.concat("Up at: ", p.threshold.toString(), "; ");
+            stats = stats.concat("Stats: ", printStats(p), "; ");
 
-            ret.messages.push(`Hey ${sender}, the stats of ${player.name}: ${profile}`);
+            ret.messages.push(`Hey ${sender}, the stats of ${p.name}: ${stats}`);
         } else {
             return error(undefined, "Too many parameters for this command, expected 0 or 1 additional parameters.");
         }

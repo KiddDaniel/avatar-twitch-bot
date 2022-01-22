@@ -6,6 +6,7 @@ import { printStats } from "./stats.model";
 
 export function printProfile(p: IPlayer): string {
     let data: string = "";
+    data = data.concat("Nation ", p.nation, "; ");
     data = data.concat("Rank: ", p.rank, "; ");
     data = data.concat("Level: ", p.level.toString(), "; ");
     data = data.concat("XP: ", p.xp.toString(), "; ");
@@ -32,10 +33,10 @@ export class ProfileCommand implements IChatCommand {
 
             ret.messages.push(`Hey ${sender}, your profile: ${profile}`);
         } else if (recipients.length === 1) {
-            const user: string = sender;
+            const user: string = recipients[0];
             if (!(user in data.players)) {
                 return error(
-                    user,
+                    sender,
                     `You cannot view the profile of user ${user} because he/she is not registered as player!`,
                 );
             }

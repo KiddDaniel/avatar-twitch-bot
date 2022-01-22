@@ -4,7 +4,7 @@ import { IChatCommandContext, IChatCommandResult } from "./chat-command.interfac
 import { getTwitchClient, globals } from "./twitch-client";
 
 export async function processClientMessage(target: string, sender: tmi.Userstate, msg: string) {
-    const contexts: IChatCommandContext[] = validateCommands(sender, msg);
+    const contexts: IChatCommandContext[] = await validateCommands(sender, msg);
 
     contexts.forEach(async (context: IChatCommandContext) => {
         const s: string = context.sender.username;

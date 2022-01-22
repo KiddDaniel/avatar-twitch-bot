@@ -92,6 +92,7 @@ export class JoinCommand implements IChatCommand {
             level: 1,
             threshold: 50,
             rank: Rank.newbie,
+            cooldown: {},
         };
 
         calculate(player.stats);
