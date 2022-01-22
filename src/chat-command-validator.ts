@@ -5,8 +5,10 @@ import { InventoryCommand } from "./commands/inventory.model";
 import { JoinCommand } from "./commands/join.model";
 import { LeaveCommand } from "./commands/leave.model";
 import { MountCommand } from "./commands/mount.model";
+import { NvNCommand } from "./commands/nvn.model";
 import { ProfileCommand } from "./commands/profile.model";
 import { PurchaseCommand } from "./commands/purchase.model";
+import { PvECommand } from "./commands/pve.model";
 import { StatsCommand } from "./commands/stats.model";
 import { StockCommand } from "./commands/stock.model";
 import { WalletCommand } from "./commands/wallet";
@@ -28,6 +30,8 @@ export const availableCommands: IChatCommand[] = [
     new ProfileCommand(),
     new StatsCommand(),
     new YipYipCommand(),
+    new PvECommand(),
+    new NvNCommand(),
 ];
 
 // disable camel case linter check here, those identifiers come from twitch
