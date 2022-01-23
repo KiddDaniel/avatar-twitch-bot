@@ -14,8 +14,6 @@ export interface INation {
     readonly name: string;
     readonly members: string[]; // only player names
     pveQueue: IBattleQueue;
-    playerSlot: IFighter;
-    npcSlot: IFighter;
     nvnQueue: IBattleQueue;
     wallet: number;
 }

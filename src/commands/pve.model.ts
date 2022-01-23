@@ -68,8 +68,7 @@ export function pveDuel(p: IFighter, npc: IFighter): IChatCommandResult {
         n.wallet += 100;
         ret.messages.push(`Player ${p.name} of nation ${n.name} won the battle`);
     }
-
-    globals.storage.save();
+    n.pveQueue.queue = [];
 
     return ret;
 }
@@ -80,6 +79,12 @@ export function pveBattle(): IChatCommandResult {
     const cooldown: number = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     const ret: IChatCommandResult = { isSuccessful: true, messages: [] };
     const na: INation[] = globals.storage.data.nations;
+    const npc: IFighter = {
+        name: "",
+        nation: "",
+        stats: {},
+        level: 0,
+    };
 
     na.forEach((n: INation) => {
         // determine level distribution
@@ -110,7 +115,6 @@ export function pveBattle(): IChatCommandResult {
         const f: IFighter | undefined = n.pveQueue.queue.shift();
         if (f !== undefined) {
             // put player into fight and restart his cooldown
-            n.playerSlot = f;
             globals.storage.data.players[f.name].cooldown.pve = Date.now() + cooldown;
 
             // make npc encounter ?
@@ -128,32 +132,20 @@ export function pveBattle(): IChatCommandResult {
                 iniative: level,
                 damage: 1.3 * level,
             };
-            n.npcSlot = {
-                name: "",
-                nation: n.name,
-                level,
-                stats: e,
-            };
-            // pair this with a real opponent ?
-            // and attack... defend...
+
+            npc.nation = n.name;
+            npc.level = level;
+            npc.stats = e;
+
+            const r: IChatCommandResult = pveDuel(f, npc);
+            r.messages.forEach((m: string) => ret.messages.push(m));
         } else {
             n.wallet -= 100; // can be negative
             ret.messages.push(`Nation ${n.name} lost 100 Yuan because nobody was there to fight`);
         }
-
-        // empty queue
-        n.pveQueue.queue = [];
     });
 
-    // battle. each nations player slot against its npc slot, iterate until hp is 0
-    // small delay in fight ?
-    let i: number = 0;
-    for (i; i < na.length; i++) {
-        const r: IChatCommandResult = pveDuel(na[i].playerSlot, na[i].npcSlot);
-        r.messages.forEach((m: string) => {
-            ret.messages.push(m);
-        });
-    }
+    globals.storage.save();
 
     return ret;
 }
@@ -187,8 +179,11 @@ export class PvECommand implements IChatCommand {
                     getTwitchClient().say(globals.channels[0], "PvE queue has been opened.");
                     timer(n.pveQueue.closeTimer).then(() => {
                         if (n !== undefined) {
-                            getTwitchClient().say(globals.channels[0], "PvE queue has been closed.");
+                            getTwitchClient().say(globals.channels[0], "PvE queue has been closed, battle starts.");
                             n.pveQueue.open = false;
+                            // start battle here
+                            const res: IChatCommandResult = pveBattle();
+                            res.messages.forEach((m: string) => ret.messages.push(m));
                         }
                     });
                 }
@@ -210,10 +205,9 @@ export class PvECommand implements IChatCommand {
                     level: p.level,
                 };
 
-                if (time >= p.cooldown.pve) {
+                if (time >= p.cooldown.pve && n.pveQueue.queue.length === 0) {
                     p.cooldown.pve = time + cooldown;
-                    n.playerSlot = f;
-                    // n.pveQueue.queue = []; later
+                    n.pveQueue.queue = [f]; // first one in new queue, first come first serve
                     ret.messages.push(`Hey ${sender}, you are ready to fight!`);
                 } else {
                     const hours: string = ((p.cooldown.pve - time) / (60 * 60 * 1000)).toFixed(2);

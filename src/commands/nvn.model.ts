@@ -126,6 +126,9 @@ export function nvnBattle(): IChatCommandResult {
         }
     }
 
+    // remove last player
+    na[winner].nvnQueue.queue = [];
+
     globals.storage.save();
 
     return ret;
@@ -160,8 +163,11 @@ export class NvNCommand implements IChatCommand {
                     getTwitchClient().say(globals.channels[0], "NvN queue has been opened.");
                     timer(n.nvnQueue.closeTimer).then(() => {
                         if (n !== undefined) {
-                            getTwitchClient().say(globals.channels[0], "NvN queue has been closed.");
+                            getTwitchClient().say(globals.channels[0], "NvN queue has been closed, battle started.");
                             n.nvnQueue.open = false;
+                            // start battle here
+                            const res: IChatCommandResult = nvnBattle();
+                            res.messages.forEach((m: string) => ret.messages.push(m));
                         }
                     });
                 }
